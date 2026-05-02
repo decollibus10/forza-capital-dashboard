@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forza Capital — Wholesaling Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231D9E75'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial,sans-serif' font-size='24' font-weight='700' fill='white'%3EFC%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f5f5f4;
+  --color-background-tertiary: #eeeeec;
+  --color-text-primary: #1c1c1a;
+  --color-text-secondary: #6b6b67;
+  --color-text-tertiary: #a0a09b;
+  --color-border-tertiary: #e5e5e3;
+  --color-border-secondary: #d1d1ce;
+  --color-accent: #1D9E75;
+  --color-accent-dark: #0F6E56;
+  --color-accent-bg: #E1F5EE;
+  --color-red: #E24B4A;
+  --color-red-bg: #FCEBEB;
+  --color-yellow: #D97706;
+  --color-yellow-bg: #FAEEDA;
+  --color-blue: #185FA5;
+  --color-blue-bg: #E6F1FB;
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.dash { display: flex; height: 100vh; min-height: 600px; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 210px;
+  min-width: 210px;
+  background: var(--color-background-primary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 18px 16px 16px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  margin-bottom: 8px;
+}
+
+.sidebar-logo .brand {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0;
+}
+
+.sidebar-logo .sub {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 1px;
+}
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  padding: 10px 16px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  border-radius: 0;
+  transition: background 0.12s;
+  position: relative;
+  user-select: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.nav-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+
+.nav-item.active {
+  background: var(--color-accent-bg);
+  color: var(--color-accent-dark);
+  font-weight: 500;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 3px;
+  background: var(--color-accent);
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-icon { font-size: 14px; width: 18px; text-align: center; opacity: 0.8; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 16px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+.sidebar-footer-label {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-bar { height: 5px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; background: var(--color-accent); transition: width 0.5s ease; }
+
+/* ── Main ── */
+.main { flex: 1; overflow-y: auto; background: var(--color-background-tertiary); }
+
+.main-inner { padding: 24px; max-width: 1200px; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── Page header ── */
+.page-header { margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 600; color: var(--color-text-primary); letter-spacing: 0; }
+.page-sub { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+
+/* ── Metrics ── */
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.pipeline-metrics { grid-template-columns: repeat(5, 1fr); }
+
+.metric {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--metric-color, var(--color-accent));
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.metric-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 5px; }
+.metric-change { font-size: 11px; margin-top: 3px; font-weight: 500; }
+.metric-change.up { color: var(--color-accent); }
+.metric-change.down { color: var(--color-red); }
+
+/* ── Cards ── */
+.card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 7px 14px;
+  font-size: 12px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  transition: all 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn:hover { background: var(--color-background-secondary); }
+.btn-green { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
+.btn-green:hover { background: var(--color-accent-dark); border-color: var(--color-accent-dark); }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+
+.btn-danger { color: var(--color-red); }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pipeline-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 180px auto auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.file-input { display: none; }
+
+.muted-empty {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  padding: 12px 4px;
+  text-align: center;
+}
+
+/* ── Grid helpers ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.benchmark-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.milestone-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.deal-form-grid-primary { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.deal-form-grid-secondary { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+/* ── Checklist ── */
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  transition: opacity 0.2s;
+}
+
+.check-item:last-child { border-bottom: none; }
+.check-item.done-item { opacity: 0.5; }
+
+.check-item input[type=checkbox] {
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+}
+
+.check-label { font-size: 13px; color: var(--color-text-primary); line-height: 1.4; flex: 1; }
+.check-label.done { text-decoration: line-through; color: var(--color-text-tertiary); }
+.check-tag { font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-left: 6px; font-weight: 500; white-space: nowrap; }
+.tag-lead { background: var(--color-accent-bg); color: var(--color-accent-dark); }
+.tag-buyer { background: var(--color-blue-bg); color: var(--color-blue); }
+.tag-deal { background: var(--color-yellow-bg); color: var(--color-yellow); }
+.tag-admin { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+
+/* ── Pipeline ── */
+.pipeline-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+.pipeline-col {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+  min-height: 180px;
+  border: 0.5px solid var(--color-border-tertiary);
+}
+
+.pipeline-col-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.deal-card-pipeline {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.deal-card-pipeline:hover { box-shadow: var(--shadow-md); border-color: var(--color-border-secondary); }
+.deal-addr { font-size: 12px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 3px; line-height: 1.3; }
+.deal-meta { font-size: 11px; color: var(--color-text-secondary); }
+.deal-fee-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent-dark);
+  background: var(--color-accent-bg);
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-top: 5px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-top: 6px;
+  border: 0.5px solid transparent;
+}
+
+.status-pill.due {
+  color: #A32D2D;
+  background: var(--color-red-bg);
+  border-color: rgba(226,75,74,0.25);
+}
+
+.status-pill.scheduled {
+  color: var(--color-blue);
+  background: var(--color-blue-bg);
+  border-color: rgba(24,95,165,0.2);
+}
+
+.status-pill.clear {
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border-color: var(--color-border-tertiary);
+}
+
+.deal-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.deal-move-btn {
+  font-size: 10px;
+  padding: 2px 7px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.1s;
+}
+
+.deal-move-btn:hover { background: var(--color-background-secondary); }
+
+.add-deal-btn {
+  width: 100%;
+  padding: 7px;
+  font-size: 12px;
+  border: 0.5px dashed var(--color-border-secondary);
+  background: transparent;
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  margin-top: 4px;
+  font-family: var(--font-sans);
+  transition: all 0.12s;
+}
+
+.add-deal-btn:hover { background: var(--color-background-primary); color: var(--color-text-secondary); border-style: solid; }
+
+/* ── Deal form ── */
+.deal-form-card {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--border-radius-lg);
+  padding: 18px 20px;
+  margin-top: 14px;
+  box-shadow: 0 0 0 3px rgba(29,158,117,0.08);
+}
+
+/* ── Analyzer ── */
+.analyzer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.field-group { margin-bottom: 13px; }
+.field-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 5px; font-weight: 500; }
+
+.field-input {
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(29,158,117,0.1);
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  font-size: 13px;
+}
+
+.result-row:last-child { border-bottom: none; }
+.result-label { color: var(--color-text-secondary); }
+.result-value { font-weight: 600; color: var(--color-text-primary); }
+.result-value.green { color: var(--color-accent); }
+.result-value.red { color: var(--color-red); }
+.result-value.big { font-size: 22px; letter-spacing: 0; }
+
+.verdict {
+  padding: 12px 16px;
+  border-radius: var(--border-radius-md);
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.verdict-icon { font-size: 16px; flex-shrink: 0; }
+.verdict.go { background: var(--color-accent-bg); color: var(--color-accent-dark); }
+.verdict.no { background: var(--color-red-bg); color: #A32D2D; }
+.verdict.maybe { background: var(--color-yellow-bg); color: var(--color-yellow); }
+
+/* ── Buyer list ── */
+.buyer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+
+.buyer-row:last-child { border-bottom: none; }
+
+.buyer-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-blue-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-blue);
+  min-width: 34px;
+  flex-shrink: 0;
+}
+
+.buyer-name { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+.buyer-detail { font-size: 11px; color: var(--color-text-secondary); margin-top: 1px; }
+.buyer-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--color-blue-bg);
+  color: var(--color-blue);
+  margin-left: auto;
+  white-space: nowrap;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.buyer-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr auto;
+  gap: 8px;
+  align-items: end;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+/* ── Scripts ── */
+.script-block {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border-left: 3px solid var(--color-accent);
+}
+
+.script-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.script-letter {
+  width: 20px;
+  height: 20px;
+  background: var(--color-accent);
+  color: white;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.script-text { font-size: 12px; color: var(--color-text-secondary); line-height: 1.75; }
+.script-text em { color: var(--color-accent-dark); font-style: normal; font-weight: 600; }
+
+/* ── Streak ── */
+.streak-grid {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 3px;
+}
+
+.streak-day {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--color-background-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  color: var(--color-text-tertiary);
+  transition: background 0.12s;
+  border: 0.5px solid transparent;
+}
+
+.streak-day:hover { background: var(--color-border-tertiary); }
+.streak-day.done { background: var(--color-accent); color: rgba(255,255,255,0.7); }
+.streak-day.today { border-color: var(--color-accent); }
+.streak-month {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  grid-column: span 13;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* ── Progress helpers ── */
+.progress-wrap { margin: 6px 0; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 5px; font-weight: 500; }
+
+/* ── Goals ── */
+.goal-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.goal-number {
+  width: 28px;
+  height: 28px;
+  background: var(--color-accent-bg);
+  color: var(--color-accent-dark);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.milestone-row {
+  padding: 10px;
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  font-size: 12px;
+}
+
+.milestone-row-title { font-weight: 600; margin-bottom: 4px; color: var(--color-text-primary); }
+.milestone-row-body { color: var(--color-text-secondary); line-height: 1.5; }
+
+/* ── Badges ── */
+.badge-count {
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 10px;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: fit-content;
+}
+
+/* ── Quick actions ── */
+.quick-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.qa-btn {
+  padding: 8px 14px;
+  font-size: 12px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  background: var(--color-background-primary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.qa-btn:hover {
+  background: var(--color-accent-bg);
+  color: var(--color-accent-dark);
+  border-color: var(--color-accent);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--color-text-primary);
+  color: var(--color-background-primary);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 999;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Prompt sheet ── */
+.prompt-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.prompt-sheet {
+  width: min(760px, 100%);
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 16px;
+}
+
+.prompt-sheet-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.prompt-sheet-body {
+  width: 100%;
+  min-height: 140px;
+  max-height: 48vh;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+}
+
+.prompt-sheet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ── Notes area ── */
+.notes-area {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px 12px;
+  font-size: 13px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.notes-area:focus { outline: none; border-color: var(--color-accent); background: var(--color-background-primary); }
+
+/* ── Benchmark cards ── */
+.benchmark-card {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 12px 14px;
+  border: 0.5px solid var(--color-border-tertiary);
+}
+
+.benchmark-title { font-size: 13px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 6px; }
+.benchmark-row { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; }
+.benchmark-label { color: var(--color-text-secondary); }
+.benchmark-value { font-weight: 500; color: var(--color-text-primary); }
+
+/* ── Dark mode ── */
+.dark {
+  --color-background-primary: #1a1a18;
+  --color-background-secondary: #222220;
+  --color-background-tertiary: #141412;
+  --color-text-primary: #f0f0ee;
+  --color-text-secondary: #a0a09b;
+  --color-text-tertiary: #666662;
+  --color-border-tertiary: #2e2e2b;
+  --color-border-secondary: #3a3a37;
+  --color-accent-bg: #0e2e22;
+  --color-red-bg: #2e1212;
+  --color-yellow-bg: #2a1f08;
+  --color-blue-bg: #0d1e30;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 3px; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .sidebar { width: 56px; min-width: 56px; }
+  .sidebar .brand, .sidebar .sub, .sidebar-logo .sub,
+  .nav-item span:not(.nav-icon), .sidebar-footer-label,
+  .nav-section-label { display: none; }
+  .nav-item { justify-content: center; padding: 10px; }
+  .nav-item::before { display: none; }
+  .main-inner { padding: 16px; }
+  .metrics-row { grid-template-columns: repeat(2, 1fr); }
+  .pipeline-metrics { grid-template-columns: repeat(2, 1fr) !important; }
+  .two-col, .three-col, .analyzer-grid, .benchmark-grid, .milestone-grid { grid-template-columns: 1fr; }
+  .pipeline-cols { grid-template-columns: repeat(2, 1fr); }
+  .pipeline-controls { grid-template-columns: 1fr 1fr; }
+  .deal-form-grid-primary, .deal-form-grid-secondary { grid-template-columns: 1fr 1fr; }
+  .buyer-form { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .dash { flex-direction: column; height: auto; min-height: 100vh; }
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    flex-direction: row;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .sidebar-logo, .sidebar-footer, .nav-section-label { display: none; }
+  .nav-item { min-width: 48px; padding: 14px 12px; }
+  .main { overflow-y: visible; }
+  .main-inner { padding: 14px; }
+  .metrics-row, .pipeline-metrics { grid-template-columns: 1fr !important; }
+  .pipeline-cols, .pipeline-controls, .deal-form-grid-primary, .deal-form-grid-secondary { grid-template-columns: 1fr; }
+  .toolbar-row, .card-header { align-items: stretch; flex-direction: column; }
+  .toolbar-actions { width: 100%; }
+  .toolbar-actions .btn, .pipeline-controls .btn, .pipeline-controls .field-input { width: 100%; justify-content: center; }
+  .buyer-row { align-items: flex-start; flex-wrap: wrap; }
+  .buyer-tag { margin-left: 46px; max-width: calc(100% - 46px); overflow-wrap: anywhere; }
+  .metric-value { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="prompt-sheet-backdrop" id="prompt-sheet-backdrop" onclick="if(event.target===this) closePromptSheet()">
+  <div class="prompt-sheet">
+    <div class="prompt-sheet-title">Prompt ready for ChatGPT</div>
+    <div class="prompt-sheet-body" id="prompt-sheet-text"></div>
+    <div class="prompt-sheet-actions">
+      <button class="btn btn-sm" onclick="closePromptSheet()">Close</button>
+      <button class="btn btn-sm" onclick="copyPromptFromSheet()">Copy prompt</button>
+      <button class="btn btn-sm btn-green" onclick="openChatGPTFromSheet()">Open ChatGPT</button>
+    </div>
+  </div>
+</div>
+
+<div class="dash">
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">Forza Capital</div>
+      <div class="sub">Wholesaling · Monmouth Co.</div>
+    </div>
+
+    <div class="nav-section-label">Workspace</div>
+
+    <button type="button" class="nav-item active" onclick="showPage('today', this)">
+      <span class="nav-icon">☀️</span>
+      <span>Today</span>
+    </button>
+    <button type="button" class="nav-item" onclick="showPage('pipeline', this)">
+      <span class="nav-icon">⟶</span>
+      <span>Pipeline</span>
+    </button>
+    <button type="button" class="nav-item" onclick="showPage('analyzer', this)">
+      <span class="nav-icon">✦</span>
+      <span>Deal analyzer</span>
+    </button>
+    <button type="button" class="nav-item" onclick="showPage('buyers', this)">
+      <span class="nav-icon">◈</span>
+      <span>Cash buyers</span>
+    </button>
+
+    <div class="nav-section-label" style="margin-top:6px;">Tools</div>
+
+    <button type="button" class="nav-item" onclick="showPage('scripts', this)">
+      <span class="nav-icon">◎</span>
+      <span>Scripts</span>
+    </button>
+    <button type="button" class="nav-item" onclick="showPage('notes', this)">
+      <span class="nav-icon">📝</span>
+      <span>Notes</span>
+    </button>
+    <button type="button" class="nav-item" onclick="showPage('goals', this)">
+      <span class="nav-icon">◉</span>
+      <span>90-day goals</span>
+    </button>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-label">
+        <span>Day <span id="day-count">1</span> of 90</span>
+        <span id="day-pct-text" style="color:var(--color-accent);font-weight:600;">1%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="day-progress" style="width: 1%;"></div>
+      </div>
+      <button class="btn btn-sm" id="dark-toggle" onclick="toggleDark()" style="width:100%;margin-top:10px;justify-content:center;">🌙 Dark mode</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+    <div class="main-inner">
+
+      <!-- TODAY -->
+      <div class="page active" id="page-today">
+        <div class="page-header">
+          <div class="page-title" id="greeting">Good morning — let's work.</div>
+          <div class="page-sub" id="today-date">Loading...</div>
+        </div>
+
+        <div class="metrics-row pipeline-metrics">
+          <div class="metric" style="--metric-color: var(--color-blue)">
+            <div class="metric-label">Cash buyers</div>
+            <div class="metric-value" id="m-buyers">0</div>
+            <div class="metric-sub">goal: 15</div>
+          </div>
+          <div class="metric" style="--metric-color: var(--color-accent)">
+            <div class="metric-label">Active leads</div>
+            <div class="metric-value" id="m-leads">0</div>
+            <div class="metric-sub">new + contacted</div>
+          </div>
+          <div class="metric" id="m-followup-metric" style="--metric-color: var(--color-accent)">
+            <div class="metric-label">Follow-ups due</div>
+            <div class="metric-value" id="m-followups">0</div>
+            <div class="metric-sub">today or overdue</div>
+          </div>
+          <div class="metric" style="--metric-color: var(--color-yellow)">
+            <div class="metric-label">Under contract</div>
+            <div class="metric-value" id="m-contract">0</div>
+            <div class="metric-sub">deals</div>
+          </div>
+          <div class="metric" style="--metric-color: var(--color-accent)">
+            <div class="metric-label">Fees earned</div>
+            <div class="metric-value" id="m-fees">$0</div>
+            <div class="metric-sub">this quarter</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Daily non-negotiables</div>
+              <span id="check-count" class="badge-count">0 / 6</span>
+            </div>
+            <div id="checklist">
+              <div class="check-item"><input type="checkbox" id="c0" onchange="updateChecks()"><label class="check-label" for="c0">Pull 10 motivated seller leads <span class="check-tag tag-lead">leads</span></label></div>
+              <div class="check-item"><input type="checkbox" id="c1" onchange="updateChecks()"><label class="check-label" for="c1">5 calls or 15 texts / mailers <span class="check-tag tag-lead">leads</span></label></div>
+              <div class="check-item"><input type="checkbox" id="c2" onchange="updateChecks()"><label class="check-label" for="c2">Follow up with active pipeline leads <span class="check-tag tag-deal">pipeline</span></label></div>
+              <div class="check-item"><input type="checkbox" id="c3" onchange="updateChecks()"><label class="check-label" for="c3">Add or contact 1 new cash buyer <span class="check-tag tag-buyer">buyers</span></label></div>
+              <div class="check-item"><input type="checkbox" id="c4" onchange="updateChecks()"><label class="check-label" for="c4">Run comps on 1 Monmouth Co. neighborhood <span class="check-tag tag-deal">research</span></label></div>
+              <div class="check-item"><input type="checkbox" id="c5" onchange="updateChecks()"><label class="check-label" for="c5">Log activity &amp; update pipeline <span class="check-tag tag-admin">admin</span></label></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">90-day streak</div>
+              <span style="font-size:11px;color:var(--color-text-tertiary);">Click a day to mark it done</span>
+            </div>
+            <div class="streak-grid" id="streak-grid"></div>
+            <div style="display:flex;gap:14px;margin-top:10px;align-items:center;">
+              <div style="display:flex;gap:6px;align-items:center;font-size:11px;color:var(--color-text-secondary);">
+                <div style="width:10px;height:10px;border-radius:2px;background:var(--color-accent);"></div>Done
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;font-size:11px;color:var(--color-text-secondary);">
+                <div style="width:10px;height:10px;border-radius:2px;border:0.5px solid var(--color-accent);"></div>Today
+              </div>
+              <div style="margin-left:auto;font-size:11px;color:var(--color-text-secondary);">
+                <span id="streak-count" style="font-weight:600;color:var(--color-accent);">0</span> day streak
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Quick actions</div>
+          </div>
+          <div class="quick-actions">
+            <button class="qa-btn" onclick="sendPrompt('Run deal math for me: ARV is $[enter ARV], repairs are $[enter repairs], what should I offer and what\'s my assignment fee at 70% rule?')">✦ Deal math</button>
+            <button class="qa-btn" onclick="sendPrompt('Give me a cold call script for a motivated seller in Monmouth County NJ who is behind on payments')">📞 Seller script</button>
+            <button class="qa-btn" onclick="sendPrompt('Write an intro message I can send to a cash buyer I found on Zillow in Monmouth County NJ')">◈ Buyer outreach</button>
+            <button class="qa-btn" onclick="sendPrompt('What should I say at my first NJ REIA meeting to find cash buyers and network with investors?')">🤝 REIA pitch</button>
+            <button class="qa-btn" onclick="sendPrompt('Help me write a text blast to motivated sellers in Marlboro NJ — keep it short and compelling')">💬 SMS blast</button>
+            <button class="qa-btn" onclick="sendPrompt('What are the top 5 ways to find motivated seller leads in Monmouth County NJ right now?')">🎯 Lead sources</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div class="page" id="page-pipeline">
+        <div class="page-header">
+          <div class="page-title">Deal pipeline</div>
+          <div class="page-sub">Track every lead from first contact to closed deal</div>
+        </div>
+
+        <div class="metrics-row pipeline-metrics">
+          <div class="metric" style="--metric-color:var(--color-blue)">
+            <div class="metric-label">New leads</div>
+            <div class="metric-value" id="pm-new">0</div>
+          </div>
+          <div class="metric" style="--metric-color:var(--color-yellow)">
+            <div class="metric-label">Contacted</div>
+            <div class="metric-value" id="pm-contacted">0</div>
+          </div>
+          <div class="metric" style="--metric-color:var(--color-accent)">
+            <div class="metric-label">Under contract</div>
+            <div class="metric-value" id="pm-contract">0</div>
+          </div>
+          <div class="metric" style="--metric-color:var(--color-accent)">
+            <div class="metric-label">Fees closed</div>
+            <div class="metric-value" id="pm-fees">$0</div>
+          </div>
+          <div class="metric" style="--metric-color:var(--color-blue)">
+            <div class="metric-label">Close rate</div>
+            <div class="metric-value" id="pm-conv">0%</div>
+            <div class="metric-sub">leads → closed</div>
+          </div>
+        </div>
+
+        <div class="toolbar-row">
+          <div class="pipeline-controls">
+            <input class="field-input" id="pipeline-search" placeholder="Search address, seller, source, notes" oninput="renderPipeline()">
+            <select class="field-input" id="pipeline-sort" onchange="renderPipeline()">
+              <option value="newest">Newest first</option>
+              <option value="followup">Follow-up due first</option>
+              <option value="maxOffer">Highest max offer</option>
+            </select>
+            <button class="btn btn-sm" onclick="exportDeals()">Export deals CSV</button>
+            <button class="btn btn-sm" onclick="exportBackup()">Backup JSON</button>
+          </div>
+        </div>
+
+        <div class="pipeline-cols" id="pipeline-board">
+          <div class="pipeline-col">
+            <div class="pipeline-col-title">New leads <span class="badge-count" id="count-new">0</span></div>
+            <div id="col-new"></div>
+            <button class="add-deal-btn" onclick="openAddDeal('new')">+ add lead</button>
+          </div>
+          <div class="pipeline-col">
+            <div class="pipeline-col-title">Contacted <span class="badge-count" id="count-contacted">0</span></div>
+            <div id="col-contacted"></div>
+            <button class="add-deal-btn" onclick="openAddDeal('contacted')">+ add lead</button>
+          </div>
+          <div class="pipeline-col">
+            <div class="pipeline-col-title">Under contract <span class="badge-count" id="count-contract">0</span></div>
+            <div id="col-contract"></div>
+            <button class="add-deal-btn" onclick="openAddDeal('contract')">+ add lead</button>
+          </div>
+          <div class="pipeline-col">
+            <div class="pipeline-col-title">Closed <span class="badge-count" id="count-closed">0</span></div>
+            <div id="col-closed"></div>
+            <button class="add-deal-btn" onclick="openAddDeal('closed')">+ add deal</button>
+          </div>
+        </div>
+
+        <div id="add-deal-form" class="deal-form-card" style="display:none;">
+          <div class="card-title" style="margin-bottom:14px;color:var(--color-accent-dark);">➕ Add deal</div>
+          <div class="deal-form-grid-primary">
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Address</div>
+              <input class="field-input" id="d-addr" placeholder="123 Main St, Marlboro NJ">
+            </div>
+            <div class="field-group" style="margin:0">
+              <div class="field-label">ARV ($)</div>
+              <input class="field-input" id="d-arv" placeholder="350000" type="number">
+            </div>
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Est. repairs ($)</div>
+              <input class="field-input" id="d-rep" placeholder="40000" type="number">
+            </div>
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Stage</div>
+              <select class="field-input" id="d-stage">
+                <option value="new">New lead</option>
+                <option value="contacted">Contacted</option>
+                <option value="contract">Under contract</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+          </div>
+          <div class="deal-form-grid-secondary">
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Seller name</div>
+              <input class="field-input" id="d-seller" placeholder="John Smith">
+            </div>
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Seller asking ($)</div>
+              <input class="field-input" id="d-ask" placeholder="320000" type="number">
+            </div>
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Assignment fee ($)</div>
+              <input class="field-input" id="d-fee" placeholder="10000" type="number" value="10000">
+            </div>
+            <div class="field-group" style="margin:0">
+              <div class="field-label">Lead source</div>
+              <select class="field-input" id="d-source">
+                <option>Cold call</option><option>Direct mail</option><option>D4D</option>
+                <option>Referral</option><option>Online</option><option>Texting</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div class="field-label">Next follow-up</div>
+            <input class="field-input" id="d-follow" type="date">
+          </div>
+          <div style="margin-bottom:12px;">
+            <div class="field-label">Notes</div>
+            <input class="field-input" id="d-notes" placeholder="Seller motivated (divorce), wants to close by June...">
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-green" onclick="addDeal()">Add to pipeline</button>
+            <button class="btn" onclick="document.getElementById('add-deal-form').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYZER -->
+      <div class="page" id="page-analyzer">
+        <div class="page-header">
+          <div class="page-title">Deal analyzer</div>
+          <div class="page-sub">70% rule — enter numbers and see your max offer instantly</div>
+        </div>
+
+        <div class="analyzer-grid">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:16px;">Deal inputs</div>
+            <div class="field-group">
+              <div class="field-label">After repair value (ARV)</div>
+              <input class="field-input" id="arv" type="number" placeholder="350000" oninput="calcDeal()">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Estimated repairs</div>
+              <input class="field-input" id="repairs" type="number" placeholder="40000" oninput="calcDeal()">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Your assignment fee target</div>
+              <input class="field-input" id="fee" type="number" placeholder="10000" oninput="calcDeal()" value="10000">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Seller's asking price <span style="color:var(--color-text-tertiary);font-weight:400;">(optional)</span></div>
+              <input class="field-input" id="ask" type="number" placeholder="leave blank if unknown" oninput="calcDeal()">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Rule of thumb</div>
+              <select class="field-input" id="rule" onchange="calcDeal()">
+                <option value="0.70">70% rule — standard</option>
+                <option value="0.65">65% rule — more margin</option>
+                <option value="0.75">75% rule — hot market / lower repairs</option>
+              </select>
+            </div>
+            <button class="btn" onclick="resetAnalyzer()" style="margin-top:2px;">↺ Reset</button>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="card-title" style="margin-bottom:16px;">Results</div>
+              <div class="result-row"><span class="result-label">ARV</span><span class="result-value" id="r-arv">—</span></div>
+              <div class="result-row"><span class="result-label">× Rule %</span><span class="result-value" id="r-rule">70%</span></div>
+              <div class="result-row"><span class="result-label">Max all-in investor price</span><span class="result-value" id="r-maxinv">—</span></div>
+              <div class="result-row"><span class="result-label">− Repairs</span><span class="result-value red" id="r-rep">—</span></div>
+              <div class="result-row"><span class="result-label">− Assignment fee</span><span class="result-value red" id="r-fee">—</span></div>
+              <div class="result-row" style="border-top:1px solid var(--color-border-secondary);margin-top:4px;padding-top:12px;">
+                <span class="result-label" style="font-weight:600;color:var(--color-text-primary);">Max offer to seller</span>
+                <span class="result-value green big" id="r-offer">—</span>
+              </div>
+              <div id="r-verdict" class="verdict" style="display:none;"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title" style="margin-bottom:12px;">Quick ask ChatGPT</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn btn-sm" onclick="sendPrompt('Explain the 70% rule in wholesaling to me simply')">What is 70% rule?</button>
+                <button class="btn btn-sm" onclick="sendPrompt('What renovation costs should I estimate for a 3BR house in Monmouth County NJ that needs a kitchen + bathrooms update?')">Repair estimates</button>
+                <button class="btn btn-sm" onclick="sendPrompt('How do I negotiate with a seller who is $20,000 above my max offer in Monmouth County?')">Negotiation tips</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Monmouth County market benchmarks</div>
+          <div class="benchmark-grid">
+            <div class="benchmark-card">
+              <div class="benchmark-title">🏘️ Marlboro / Morganville</div>
+              <div class="benchmark-row"><span class="benchmark-label">ARV range</span><span class="benchmark-value">$350k – $600k</span></div>
+              <div class="benchmark-row"><span class="benchmark-label">Typical repairs</span><span class="benchmark-value">$25k – $60k</span></div>
+              <div class="benchmark-row"><span class="benchmark-label">Max offer (70%)</span><span class="benchmark-value">$185k – $360k</span></div>
+            </div>
+            <div class="benchmark-card">
+              <div class="benchmark-title">🏘️ Aberdeen / Keyport</div>
+              <div class="benchmark-row"><span class="benchmark-label">ARV range</span><span class="benchmark-value">$250k – $450k</span></div>
+              <div class="benchmark-row"><span class="benchmark-label">Typical repairs</span><span class="benchmark-value">$20k – $50k</span></div>
+              <div class="benchmark-row"><span class="benchmark-label">Max offer (70%)</span><span class="benchmark-value">$125k – $265k</span></div>
+            </div>
+            <div class="benchmark-card">
+              <div class="benchmark-title">🏘️ Holmdel / Manalapan</div>
+              <div class="benchmark-row"><span class="benchmark-label">ARV range</span><span class="benchmark-value">$450k – $750k</span></div>
+              <div class="benchmark-row"><span class="benchmark-label">Typical repairs</span><span class="benchmark-value">$30k – $80k</span></div>
+              <div class="benchmark-row"><span class="benchmark-label">Max offer (70%)</span><span class="benchmark-value">$235k – $445k</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUYERS -->
+      <div class="page" id="page-buyers">
+        <div class="page-header">
+          <div class="page-title">Cash buyer list</div>
+          <div class="page-sub">Goal: 15 buyers — <span id="buyer-progress-text">0 added</span></div>
+        </div>
+
+        <div class="progress-wrap" style="margin-bottom:16px;">
+          <div class="progress-label">
+            <span>Buyer list progress</span>
+            <span id="buyer-pct" style="color:var(--color-accent);font-weight:600;">0 / 15</span>
+          </div>
+          <div class="progress-bar" style="height:8px;">
+            <div class="progress-fill" id="buyer-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Buyers</div>
+            <button class="btn btn-sm" onclick="exportBuyers()">↓ Export CSV</button>
+          </div>
+          <div id="buyer-list"></div>
+          <div class="buyer-form">
+            <div>
+              <div class="field-label" style="font-size:11px;">Name</div>
+              <input class="field-input" id="b-name" placeholder="Mike D.">
+            </div>
+            <div>
+              <div class="field-label" style="font-size:11px;">Phone / email</div>
+              <input class="field-input" id="b-contact" placeholder="732-555-0100">
+            </div>
+            <div>
+              <div class="field-label" style="font-size:11px;">Buy box / notes</div>
+              <input class="field-input" id="b-notes" placeholder="SFR Marlboro, under $300k">
+            </div>
+            <button class="btn btn-green" style="height:38px;" onclick="addBuyer()">Add</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:10px;">Finding buyers — quick resources</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="qa-btn" onclick="sendPrompt('Write a Facebook group post introducing myself as a wholesaler looking for cash buyers in Monmouth County NJ')">↗ FB group intro</button>
+            <button class="qa-btn" onclick="sendPrompt('How do I find recent all-cash sales in Monmouth County on Zillow or Redfin to identify cash buyers?')">↗ Zillow cash buyers</button>
+            <button class="qa-btn" onclick="sendPrompt('What should I say at NJ REIA to introduce myself, network, and collect cash buyer contacts?')">↗ REIA script</button>
+            <button class="qa-btn" onclick="sendPrompt('Write a short text message I can send to a cash buyer I found who bought 3 properties in Monmouth County')">↗ First text to buyer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCRIPTS -->
+      <div class="page" id="page-scripts">
+        <div class="page-header">
+          <div class="page-title">Scripts &amp; frameworks</div>
+          <div class="page-sub">LMPAMA seller qualification + key talking points for Monmouth County</div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:14px;">LMPAMA seller framework</div>
+              <div class="script-block">
+                <div class="script-title"><div class="script-letter">L</div>Location</div>
+                <div class="script-text">"Can you tell me the address of the property?"</div>
+              </div>
+              <div class="script-block">
+                <div class="script-title"><div class="script-letter">M</div>Motivation</div>
+                <div class="script-text">"What's making you consider selling right now?" <em>Listen hard — this is everything. People sell for reasons, not prices.</em></div>
+              </div>
+              <div class="script-block">
+                <div class="script-title"><div class="script-letter">P</div>Price</div>
+                <div class="script-text">"Do you have a number in mind?" <em>Don't anchor first if you can avoid it. Let them go first.</em></div>
+              </div>
+              <div class="script-block">
+                <div class="script-title"><div class="script-letter">A</div>Asking condition</div>
+                <div class="script-text">"How would you describe the condition? Any updates or repairs needed in the last 10 years?"</div>
+              </div>
+              <div class="script-block">
+                <div class="script-title"><div class="script-letter">M</div>Mortgage</div>
+                <div class="script-text">"Is there a mortgage on the property? Roughly how much is owed?" <em>You need to know if there's equity to work with.</em></div>
+              </div>
+              <div class="script-block">
+                <div class="script-title"><div class="script-letter">A</div>Appointment</div>
+                <div class="script-text">"I'd love to come take a look — are you free <em>[day]</em> or <em>[day]</em>? Takes 20 minutes."</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:14px;">Cold call opener</div>
+              <div class="script-block">
+                <div class="script-text">"Hi, is this the owner of <em>[address]</em>? My name is Christian, I'm a local real estate investor in Monmouth County. I noticed your property and wanted to reach out — are you at all open to a <em>cash offer</em> on the house? I'm not an agent, no fees, no commissions, close on your timeline."</div>
+              </div>
+
+              <div class="card-title" style="margin-bottom:14px;margin-top:16px;">"What's your offer?" — deflect &amp; qualify</div>
+              <div class="script-block">
+                <div class="script-text">"I'd love to give you a fair number — I just want to make sure I'm not wasting your time with a number that doesn't work. Can I ask a few quick questions about the property first? Takes two minutes."</div>
+              </div>
+
+              <div class="card-title" style="margin-bottom:14px;margin-top:16px;">"I need full price" — reframe</div>
+              <div class="script-block">
+                <div class="script-text">"I completely understand. Our offers are typically below retail — but the trade-off is <em>no repairs, no showings, no contingencies, close in 2–3 weeks</em>. Is speed or simplicity at all important to you in this sale?"</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title" style="margin-bottom:10px;">Ask ChatGPT for more scripts</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="qa-btn" onclick="sendPrompt('Give me a voicemail script for motivated seller leads in Monmouth County NJ — keep it under 30 seconds')">Voicemail script</button>
+                <button class="qa-btn" onclick="sendPrompt('Write a 3-text follow-up sequence for motivated seller leads in NJ who went cold after the first call')">Follow-up texts</button>
+                <button class="qa-btn" onclick="sendPrompt('How do I handle a seller who says stop calling me? What should I say?')">Angry seller</button>
+                <button class="qa-btn" onclick="sendPrompt('Write a direct mail letter for motivated sellers in Marlboro and Morganville NJ — one page, casual but professional')">Direct mail letter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="page" id="page-notes">
+        <div class="page-header">
+          <div class="page-title">Notes</div>
+          <div class="page-sub">Saved automatically as you type</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Deal notes &amp; scratch pad</div>
+            <span style="font-size:11px;color:var(--color-text-tertiary);" id="notes-saved-indicator">Auto-saved</span>
+          </div>
+          <textarea class="notes-area" id="notes-area" placeholder="Jot down deal notes, seller details, comp numbers, follow-up reminders...&#10;&#10;Example:&#10;• 14 Oak St Marlboro — seller Patricia, 732-555-0123. ARV ~$380k, motivated (divorce). Wants to close by June. Follow up Friday.&#10;• REIA meeting next Tuesday — bring business cards" rows="16"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Data safety</div>
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px;">Export a backup before switching browsers or clearing site data.</div>
+            </div>
+            <div class="toolbar-actions">
+              <button class="btn btn-sm" onclick="exportBackup()">Backup JSON</button>
+              <button class="btn btn-sm" onclick="document.getElementById('backup-import').click()">Import backup</button>
+              <input class="file-input" id="backup-import" type="file" accept="application/json,.json" onchange="importBackup(this.files[0], this)">
+              <button class="btn btn-sm btn-danger" onclick="resetData()">Reset all data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOALS -->
+      <div class="page" id="page-goals">
+        <div class="page-header">
+          <div class="page-title">90-day goals</div>
+          <div class="page-sub">Forza Capital — Monmouth County wholesaling sprint</div>
+        </div>
+
+        <div class="three-col" style="margin-bottom:14px;">
+          <div class="goal-card">
+            <div class="goal-number">①</div>
+            <div class="card-title">Build buyer list to 15</div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin:8px 0 14px;line-height:1.6;">Do this FIRST — before chasing deals. You need buyers before you need contracts. No buyer, no deal.</div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Progress</span><span id="goal-buyer-pct" style="color:var(--color-accent);font-weight:600;">0 / 15</span></div>
+              <div class="progress-bar"><div class="progress-fill" id="goal-buyer-bar" style="width:0%"></div></div>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:10px;">Week 1–4 focus</div>
+          </div>
+
+          <div class="goal-card">
+            <div class="goal-number">②</div>
+            <div class="card-title">Get 1 property under contract</div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin:8px 0 14px;line-height:1.6;">Expect 10–15 offers to get here. Every rejected offer is one step closer. Keep making offers.</div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Offers made</span><span id="goal-offers-pct" style="color:var(--color-accent);font-weight:600;">0 / 15</span></div>
+              <div class="progress-bar"><div class="progress-fill" id="goal-offers-bar" style="width:0%"></div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button class="btn btn-sm" onclick="incrementOffers(-1)">−</button>
+              <button class="btn btn-sm btn-green" onclick="incrementOffers(1)">+ offer made</button>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:10px;">Week 5–8 focus</div>
+          </div>
+
+          <div class="goal-card">
+            <div class="goal-number">③</div>
+            <div class="card-title">Close first deal</div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin:8px 0 14px;line-height:1.6;">Target $8k–$15k assignment fee. Reinvest <em>everything</em> back into more leads and marketing.</div>
+            <div style="padding:12px 14px;background:var(--color-accent-bg);border-radius:var(--border-radius-md);text-align:center;">
+              <div style="font-size:11px;color:var(--color-accent-dark);font-weight:500;">First fee target</div>
+              <div style="font-size:28px;font-weight:700;color:var(--color-accent);margin-top:4px;letter-spacing:0;">$10,000</div>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:12px;">Week 9–12 focus</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Week-by-week milestones</div>
+          <div class="milestone-grid">
+            <div class="milestone-row">
+              <div class="milestone-row-title">📋 Wk 1–2: Foundation</div>
+              <div class="milestone-row-body">LLC check · PropStream trial · DealMachine setup · Find a real estate attorney in Monmouth Co.</div>
+            </div>
+            <div class="milestone-row">
+              <div class="milestone-row-title">◈ Wk 3–4: Build buyers</div>
+              <div class="milestone-row-body">Attend REIA · Research Zillow cash sales · Post in FB groups · Reach 10 buyers</div>
+            </div>
+            <div class="milestone-row">
+              <div class="milestone-row-title">📞 Wk 5–8: Outreach</div>
+              <div class="milestone-row-body">Daily lead gen · Make first 3 offers · Refine call scripts · Pull driving for dollars list</div>
+            </div>
+            <div class="milestone-row">
+              <div class="milestone-row-title">🏠 Wk 9–12: First deal</div>
+              <div class="milestone-row-body">Under contract → market to buyers → negotiate assignment → close and collect</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-inner -->
+  </div><!-- /main -->
+</div><!-- /dash -->
+
+<script>
+// ─────────────────────────────────────────────────────────
+// STATE — loaded from localStorage, saved on every change
+// ─────────────────────────────────────────────────────────
+const STORAGE_KEY = 'forza_dashboard_v2';
+const STAGE_ORDER = ['new','contacted','contract','closed'];
+const STAGE_LABELS = { new:'New lead', contacted:'Contacted', contract:'Under contract', closed:'Closed' };
+
+function todayKey(date = new Date()) {
+  const pad = n => String(n).padStart(2, '0');
+  return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+}
+
+function parseDateKey(value) {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [y, m, d] = value.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
+}
+
+function formatMoney(value, fallback = '—') {
+  const number = Number(value);
+  return number > 0 ? '$' + Math.round(number).toLocaleString() : fallback;
+}
+
+function csvValue(value) {
+  return '"' + String(value ?? '').replace(/"/g, '""') + '"';
+}
+
+function downloadText(filename, mimeType, text) {
+  try {
+    const blob = new Blob([text], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+  } catch (e) {
+    showToast('Download blocked by this browser context');
+  }
+}
+
+function loadState() {
+  try {
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return null;
+}
+
+function saveState() {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+const defaults = {
+  buyers: [],
+  deals: { new: [], contacted: [], contract: [], closed: [] },
+  streak: [],
+  offers: 0,
+  fees: 0,
+  checks: [false,false,false,false,false,false],
+  checksDate: '',
+  notes: '',
+  startDay: todayKey()
+};
+
+function normalizeState(savedState) {
+  const source = savedState && typeof savedState === 'object' ? savedState : {};
+  const normalized = { ...defaults, ...source };
+
+  normalized.buyers = Array.isArray(source.buyers) ? source.buyers : [];
+  normalized.deals = {};
+  STAGE_ORDER.forEach(stage => {
+    normalized.deals[stage] = Array.isArray(source.deals?.[stage]) ? source.deals[stage] : [];
+  });
+  normalized.streak = Array.isArray(source.streak) ? [...new Set(source.streak.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n < 90))] : [];
+  normalized.offers = Math.max(0, Number(source.offers) || 0);
+  normalized.fees = Math.max(0, Number(source.fees) || 0);
+  normalized.checks = Array.isArray(source.checks) ? defaults.checks.map((_, i) => Boolean(source.checks[i])) : [...defaults.checks];
+  normalized.checksDate = typeof source.checksDate === 'string' ? source.checksDate : '';
+  normalized.notes = typeof source.notes === 'string' ? source.notes : '';
+  normalized.startDay = typeof source.startDay === 'string' && source.startDay ? source.startDay : defaults.startDay;
+  return normalized;
+}
+
+const saved = loadState();
+const state = normalizeState(saved);
+
+// ─────────────────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+let pendingPrompt = '';
+function showPromptSheet(text) {
+  pendingPrompt = text || '';
+  const body = document.getElementById('prompt-sheet-text');
+  const backdrop = document.getElementById('prompt-sheet-backdrop');
+  if (body) body.textContent = pendingPrompt;
+  if (backdrop) backdrop.style.display = 'flex';
+}
+
+function closePromptSheet() {
+  const backdrop = document.getElementById('prompt-sheet-backdrop');
+  if (backdrop) backdrop.style.display = 'none';
+}
+
+function copyPromptFromSheet() {
+  if (!pendingPrompt) return;
+  const hasClipboard = typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function';
+  if (hasClipboard) {
+    navigator.clipboard.writeText(pendingPrompt)
+      .then(() => showToast('Copied to clipboard'))
+      .catch(() => window.prompt('Copy this prompt:', pendingPrompt));
+    return;
+  }
+  window.prompt('Copy this prompt:', pendingPrompt);
+}
+
+async function openChatGPTFromSheet() {
+  const url = 'https://chatgpt.com/';
+  if (pendingPrompt) {
+    const hasClipboard = typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function';
+    if (hasClipboard) {
+      try {
+        await navigator.clipboard.writeText(pendingPrompt);
+      } catch (e) {
+        // Continue opening ChatGPT even if clipboard write is blocked.
+      }
+    }
+  }
+
+  let opened = null;
+  try {
+    opened = window.open(url, '_blank', 'noopener');
+  } catch (e) {
+    opened = null;
+  }
+  if (opened) {
+    showToast('Opened ChatGPT — prompt copied, paste with Cmd+V');
+    return;
+  }
+  // Fallback for in-app browsers that block popups/new tabs.
+  window.location.href = url;
+}
+
+// ─────────────────────────────────────────────────────────
+// NAV
+// ─────────────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  else document.querySelector(`[onclick*="'${id}'"]`)?.classList.add('active');
+}
+
+// ─────────────────────────────────────────────────────────
+// DATE & GREETING
+// ─────────────────────────────────────────────────────────
+function initDate() {
+  const now = new Date();
+  const h = now.getHours();
+  let greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').textContent = greeting + ' — let\'s work.';
+  document.getElementById('today-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Day counter from start
+  const start = parseDateKey(state.startDay) || now;
+  const diffDays = Math.floor((now - start) / 86400000) + 1;
+  const day = Math.min(90, Math.max(1, diffDays));
+  const pct = Math.round(day / 90 * 100);
+  document.getElementById('day-count').textContent = day;
+  document.getElementById('day-pct-text').textContent = pct + '%';
+  document.getElementById('day-progress').style.width = pct + '%';
+}
+
+// ─────────────────────────────────────────────────────────
+// CHECKLIST
+// ─────────────────────────────────────────────────────────
+function initChecks() {
+  const today = todayKey();
+  if (state.checksDate !== today) {
+    state.checks = [false,false,false,false,false,false];
+    state.checksDate = today;
+    saveState();
+  }
+  state.checks.forEach((checked, i) => {
+    const cb = document.getElementById('c' + i);
+    if (cb) cb.checked = checked;
+  });
+  updateChecks();
+}
+
+function updateChecks() {
+  const boxes = document.querySelectorAll('#checklist input[type=checkbox]');
+  let done = 0;
+  boxes.forEach((b, i) => {
+    const checked = b.checked;
+    if (checked) done++;
+    state.checks[i] = checked;
+    const item = b.closest('.check-item');
+    const label = item.querySelector('.check-label');
+    if (label) label.classList.toggle('done', checked);
+    item.classList.toggle('done-item', checked);
+  });
+  document.getElementById('check-count').textContent = done + ' / ' + boxes.length;
+  saveState();
+}
+
+// ─────────────────────────────────────────────────────────
+// STREAK
+// ─────────────────────────────────────────────────────────
+function buildStreak() {
+  const grid = document.getElementById('streak-grid');
+  const start = parseDateKey(state.startDay) || new Date();
+  const today = new Date();
+  const todayIdx = Math.min(89, Math.max(0, Math.floor((today - start) / 86400000)));
+
+  let html = '';
+  for (let i = 0; i < 90; i++) {
+    const isToday = i === todayIdx;
+    const done = state.streak.includes(i);
+    html += `<div class="streak-day ${done ? 'done' : ''} ${isToday ? 'today' : ''}" title="Day ${i+1}" onclick="toggleStreak(${i})">${i+1}</div>`;
+    if ((i + 1) % 30 === 0 && i < 89) {
+      const labels = ['Month 1', 'Month 2'];
+      html += `<div class="streak-month">${labels[Math.floor(i/30)]}</div>`;
+    }
+  }
+  grid.innerHTML = html;
+
+  // Calculate current streak
+  let streak = 0;
+  for (let i = todayIdx; i >= 0; i--) {
+    if (state.streak.includes(i)) streak++;
+    else break;
+  }
+  document.getElementById('streak-count').textContent = streak;
+}
+
+function toggleStreak(day) {
+  const idx = state.streak.indexOf(day);
+  if (idx > -1) state.streak.splice(idx, 1);
+  else state.streak.push(day);
+  buildStreak();
+  saveState();
+  showToast(state.streak.includes(day) ? '✓ Day ' + (day+1) + ' marked complete' : 'Day ' + (day+1) + ' unmarked');
+}
+
+// ─────────────────────────────────────────────────────────
+// DEAL ANALYZER
+// ─────────────────────────────────────────────────────────
+function calcDeal() {
+  const arv = parseFloat(document.getElementById('arv').value) || 0;
+  const rep = parseFloat(document.getElementById('repairs').value) || 0;
+  const fee = parseFloat(document.getElementById('fee').value) || 10000;
+  const ask = parseFloat(document.getElementById('ask').value) || 0;
+  const rule = parseFloat(document.getElementById('rule').value);
+
+  const fmt = v => v > 0 ? '$' + Math.round(v).toLocaleString() : '—';
+
+  document.getElementById('r-arv').textContent = fmt(arv);
+  document.getElementById('r-rule').textContent = Math.round(rule * 100) + '%';
+
+  if (!arv) {
+    ['r-maxinv','r-rep','r-fee','r-offer'].forEach(id => document.getElementById(id).textContent = '—');
+    document.getElementById('r-verdict').style.display = 'none';
+    return;
+  }
+
+  const maxInv = arv * rule;
+  const offer = maxInv - rep - fee;
+
+  document.getElementById('r-maxinv').textContent = fmt(maxInv);
+  document.getElementById('r-rep').textContent = rep > 0 ? '−' + fmt(rep) : '—';
+  document.getElementById('r-fee').textContent = '−' + fmt(fee);
+  document.getElementById('r-offer').textContent = offer > 0 ? fmt(offer) : '$0 (doesn\'t work)';
+
+  const verdict = document.getElementById('r-verdict');
+  verdict.style.display = 'flex';
+
+  if (ask > 0) {
+    if (ask <= offer) {
+      verdict.className = 'verdict go';
+      verdict.innerHTML = '<div class="verdict-icon">✅</div>Deal looks solid — seller\'s asking price is at or below your max. Room to make it work.';
+    } else if (ask <= offer * 1.15) {
+      verdict.className = 'verdict maybe';
+      verdict.innerHTML = '<div class="verdict-icon">⚠️</div>Seller is ' + fmt(ask - offer) + ' over your max. Try negotiating — might still pencil if you push back on repairs or fee.';
+    } else {
+      verdict.className = 'verdict no';
+      verdict.innerHTML = '<div class="verdict-icon">❌</div>Seller is ' + fmt(ask - offer) + ' above your max offer. Hard to make numbers work. Move on or educate the seller.';
+    }
+  } else {
+    if (offer > 0) {
+      verdict.className = 'verdict go';
+      verdict.innerHTML = '<div class="verdict-icon">✦</div>Your max offer to the seller is <strong>' + fmt(offer) + '</strong>. Don\'t go a dollar above this.';
+    } else {
+      verdict.className = 'verdict no';
+      verdict.innerHTML = '<div class="verdict-icon">❌</div>Numbers don\'t work — repairs + fee exceed the investor\'s max. Adjust or pass on this deal.';
+    }
+  }
+}
+
+function resetAnalyzer() {
+  ['arv','repairs','ask'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fee').value = '10000';
+  document.getElementById('rule').value = '0.70';
+  calcDeal();
+}
+
+// ─────────────────────────────────────────────────────────
+// BUYERS
+// ─────────────────────────────────────────────────────────
+function addBuyer() {
+  const name = document.getElementById('b-name').value.trim();
+  const contact = document.getElementById('b-contact').value.trim();
+  const notes = document.getElementById('b-notes').value.trim();
+  if (!name) { showToast('Enter a buyer name'); return; }
+  state.buyers.push({ name, contact, notes, added: todayKey() });
+  document.getElementById('b-name').value = '';
+  document.getElementById('b-contact').value = '';
+  document.getElementById('b-notes').value = '';
+  renderBuyers();
+  updateMetrics();
+  saveState();
+  showToast('✓ ' + name + ' added to buyer list');
+}
+
+function removeBuyer(i) {
+  const name = state.buyers[i].name;
+  state.buyers.splice(i, 1);
+  renderBuyers();
+  updateMetrics();
+  saveState();
+  showToast(name + ' removed');
+}
+
+function renderBuyers() {
+  const list = document.getElementById('buyer-list');
+  if (!state.buyers.length) {
+    list.innerHTML = '<div class="muted-empty">No buyers yet — add your first one below.</div>';
+  } else {
+    list.innerHTML = state.buyers.map((b, i) => {
+      const name = escapeHTML(b.name || 'Unnamed buyer');
+      const contact = escapeHTML(b.contact || '—');
+      const notes = escapeHTML(b.notes || 'Cash buyer');
+      const initials = escapeHTML(String(b.name || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase() || '?');
+      return `
+      <div class="buyer-row">
+        <div class="buyer-avatar">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="buyer-name">${name}</div>
+          <div class="buyer-detail">${contact}</div>
+        </div>
+        <div class="buyer-tag">${notes}</div>
+        <button class="btn btn-sm" onclick="removeBuyer(${i})" style="color:var(--color-text-tertiary);margin-left:8px;">✕</button>
+      </div>`;
+    }).join('');
+  }
+  const pct = Math.min(100, Math.round(state.buyers.length / 15 * 100));
+  document.getElementById('buyer-bar').style.width = pct + '%';
+  document.getElementById('buyer-pct').textContent = state.buyers.length + ' / 15';
+  document.getElementById('buyer-progress-text').textContent = state.buyers.length + ' added';
+  document.getElementById('goal-buyer-bar').style.width = pct + '%';
+  document.getElementById('goal-buyer-pct').textContent = state.buyers.length + ' / 15';
+}
+
+function exportBuyers() {
+  if (!state.buyers.length) { showToast('No buyers to export'); return; }
+  const rows = [['Name','Contact','Buy Box / Notes','Added']].concat(
+    state.buyers.map(b => [b.name, b.contact || '', b.notes || '', b.added || ''])
+  );
+  const csv = rows.map(r => r.map(csvValue).join(',')).join('\n');
+  downloadText('forza-buyers.csv', 'text/csv;charset=utf-8', csv);
+  showToast('✓ Buyer list exported');
+}
+
+// ─────────────────────────────────────────────────────────
+// PIPELINE
+// ─────────────────────────────────────────────────────────
+function openAddDeal(stage) {
+  document.getElementById('d-stage').value = stage;
+  const followInput = document.getElementById('d-follow');
+  if (followInput && stage !== 'closed' && !followInput.value) {
+    followInput.value = todayKey(new Date(Date.now() + 86400000));
+  }
+  const f = document.getElementById('add-deal-form');
+  f.style.display = 'block';
+  setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
+  document.getElementById('d-addr').focus();
+}
+
+function addDeal() {
+  const addr = document.getElementById('d-addr').value.trim();
+  const arv = parseFloat(document.getElementById('d-arv').value) || 0;
+  const rep = parseFloat(document.getElementById('d-rep').value) || 0;
+  const ask = parseFloat(document.getElementById('d-ask').value) || 0;
+  const fee = parseFloat(document.getElementById('d-fee').value) || 10000;
+  const stage = document.getElementById('d-stage').value;
+  const seller = document.getElementById('d-seller').value.trim();
+  const source = document.getElementById('d-source').value;
+  const followUp = document.getElementById('d-follow').value;
+  const notes = document.getElementById('d-notes').value.trim();
+  if (!addr) { showToast('Enter a property address'); return; }
+  const maxOffer = arv ? Math.round(arv * 0.7 - rep - fee) : 0;
+  const addedDate = todayKey();
+  state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, source, followUp, notes, added: addedDate });
+  if (stage === 'closed') state.fees += fee;
+  ['d-addr','d-seller','d-follow','d-notes'].forEach(id => document.getElementById(id).value = '');
+  ['d-arv','d-rep','d-ask'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('d-fee').value = '10000';
+  document.getElementById('add-deal-form').style.display = 'none';
+  renderPipeline();
+  updateMetrics();
+  saveState();
+  showToast('✓ Deal added to ' + STAGE_LABELS[stage]);
+}
+
+function moveDeal(fromStage, idx, toStage) {
+  if (!STAGE_ORDER.includes(toStage)) return;
+  const deal = state.deals[fromStage].splice(idx, 1)[0];
+  if (toStage === 'closed') deal.followUp = '';
+  state.deals[toStage].push(deal);
+  const dealFee = deal.fee || 10000;
+  if (toStage === 'closed' && fromStage !== 'closed') state.fees += dealFee;
+  if (fromStage === 'closed' && toStage !== 'closed') state.fees = Math.max(0, state.fees - dealFee);
+  renderPipeline();
+  updateMetrics();
+  saveState();
+  showToast('✓ Moved to ' + STAGE_LABELS[toStage]);
+}
+
+function removeDeal(stage, idx) {
+  const deal = state.deals[stage][idx];
+  if (stage === 'closed') state.fees = Math.max(0, state.fees - (deal.fee || 10000));
+  state.deals[stage].splice(idx, 1);
+  renderPipeline();
+  updateMetrics();
+  saveState();
+  showToast(deal.addr + ' removed');
+}
+
+function daysAgo(dateStr) {
+  if (!dateStr) return '';
+  const d = parseDateKey(dateStr);
+  if (!d) return '';
+  const days = Math.floor((new Date() - d) / 86400000);
+  if (days === 0) return 'today';
+  if (days === 1) return '1d ago';
+  return days + 'd ago';
+}
+
+function followUpMeta(dateStr) {
+  const d = parseDateKey(dateStr);
+  if (!d) return null;
+  const today = parseDateKey(todayKey());
+  const days = Math.ceil((d - today) / 86400000);
+  const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (days < 0) return { className: 'due', text: 'Follow-up overdue: ' + label };
+  if (days === 0) return { className: 'due', text: 'Follow up today' };
+  if (days === 1) return { className: 'scheduled', text: 'Follow up tomorrow' };
+  return { className: 'scheduled', text: 'Follow up ' + label };
+}
+
+function dealMatchesQuery(deal, query) {
+  if (!query) return true;
+  return [deal.addr, deal.seller, deal.source, deal.notes, deal.ask, deal.arv, deal.maxOffer]
+    .join(' ')
+    .toLowerCase()
+    .includes(query);
+}
+
+function renderPipeline() {
+  const query = (document.getElementById('pipeline-search')?.value || '').trim().toLowerCase();
+  const sortMode = document.getElementById('pipeline-sort')?.value || 'newest';
+
+  STAGE_ORDER.forEach((stage, si) => {
+    const col = document.getElementById('col-' + stage);
+    const count = document.getElementById('count-' + stage);
+    count.textContent = state.deals[stage].length;
+
+    const prevStage = si > 0 ? STAGE_ORDER[si - 1] : null;
+    const nextStage = si < STAGE_ORDER.length - 1 ? STAGE_ORDER[si + 1] : null;
+    const viewDeals = state.deals[stage]
+      .map((deal, index) => ({ deal, index }))
+      .filter(item => dealMatchesQuery(item.deal, query))
+      .sort((a, b) => {
+        if (sortMode === 'maxOffer') return (Number(b.deal.maxOffer) || 0) - (Number(a.deal.maxOffer) || 0);
+        if (sortMode === 'followup') {
+          const aDate = parseDateKey(a.deal.followUp)?.getTime() || Number.MAX_SAFE_INTEGER;
+          const bDate = parseDateKey(b.deal.followUp)?.getTime() || Number.MAX_SAFE_INTEGER;
+          return aDate - bDate;
+        }
+        return (parseDateKey(b.deal.added)?.getTime() || 0) - (parseDateKey(a.deal.added)?.getTime() || 0);
+      });
+
+    if (!viewDeals.length) {
+      col.innerHTML = `<div class="muted-empty">${query ? 'No matching deals' : 'No deals in this stage'}</div>`;
+      return;
+    }
+
+    col.innerHTML = viewDeals.map(({ deal: d, index: i }) => {
+      const gap = d.ask && d.maxOffer ? d.ask - d.maxOffer : 0;
+      const gapHtml = d.ask && d.maxOffer ? (gap <= 0
+        ? `<div class="deal-meta" style="color:var(--color-accent);font-weight:500;margin-top:2px;">✓ Ask ${formatMoney(d.ask)} — under max by ${formatMoney(Math.abs(gap), '$0')}</div>`
+        : `<div class="deal-meta" style="color:var(--color-red);margin-top:2px;">Ask ${formatMoney(d.ask)} — ${formatMoney(gap, '$0')} over max</div>`) : '';
+      const follow = followUpMeta(d.followUp);
+      const followHtml = follow ? `<div class="status-pill ${follow.className}">${escapeHTML(follow.text)}</div>` : '';
+      const address = escapeHTML(d.addr || 'Untitled property');
+      const seller = d.seller ? escapeHTML(d.seller) + ' · ' : '';
+      const source = escapeHTML(d.source || 'No source');
+      const added = escapeHTML(daysAgo(d.added));
+      const notes = d.notes ? `<div class="deal-meta" style="margin-top:5px;font-style:italic;color:var(--color-text-secondary);">${escapeHTML(d.notes)}</div>` : '';
+      const arv = Number(d.arv) || 0;
+      const repairs = Number(d.rep) || 0;
+      return `
+      <div class="deal-card-pipeline">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="deal-addr">${address}</div>
+          <div style="font-size:10px;color:var(--color-text-tertiary);white-space:nowrap;margin-left:6px;">${added}</div>
+        </div>
+        <div class="deal-meta">${seller}${source}</div>
+        ${arv ? '<div class="deal-meta" style="margin-top:2px;">ARV ' + formatMoney(arv) + (repairs ? ' · Repairs ' + formatMoney(repairs) : '') + '</div>' : ''}
+        ${gapHtml}
+        ${d.maxOffer > 0 ? '<div class="deal-fee-pill">Max offer: ' + formatMoney(d.maxOffer) + '</div>' : ''}
+        ${followHtml}
+        ${notes}
+        <div class="deal-actions">
+          ${prevStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${prevStage}')">← ${STAGE_LABELS[prevStage].split(' ')[0]}</button>` : ''}
+          ${nextStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${nextStage}')">→ ${STAGE_LABELS[nextStage].split(' ')[0]}</button>` : ''}
+          <button class="deal-move-btn" onclick="removeDeal('${stage}',${i})" style="color:var(--color-red);margin-left:auto;">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  });
+
+  // Pipeline metrics
+  const totalLeads = state.deals.new.length + state.deals.contacted.length + state.deals.contract.length + state.deals.closed.length;
+  const convRate = totalLeads > 0 ? Math.round(state.deals.closed.length / totalLeads * 100) : 0;
+  const pm_new = document.getElementById('pm-new');
+  const pm_contacted = document.getElementById('pm-contacted');
+  const pm_contract = document.getElementById('pm-contract');
+  const pm_fees = document.getElementById('pm-fees');
+  const pm_conv = document.getElementById('pm-conv');
+  if (pm_new) pm_new.textContent = state.deals.new.length;
+  if (pm_contacted) pm_contacted.textContent = state.deals.contacted.length;
+  if (pm_contract) pm_contract.textContent = state.deals.contract.length;
+  if (pm_fees) pm_fees.textContent = '$' + state.fees.toLocaleString();
+  if (pm_conv) pm_conv.textContent = convRate + '%';
+}
+
+function exportDeals() {
+  const rows = [['Stage','Address','Seller','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Notes','Added']];
+  STAGE_ORDER.forEach(stage => {
+    state.deals[stage].forEach(d => {
+      rows.push([
+        STAGE_LABELS[stage],
+        d.addr || '',
+        d.seller || '',
+        d.source || '',
+        d.arv || '',
+        d.rep || '',
+        d.ask || '',
+        d.fee || '',
+        d.maxOffer || '',
+        d.followUp || '',
+        d.notes || '',
+        d.added || ''
+      ]);
+    });
+  });
+  if (rows.length === 1) { showToast('No deals to export'); return; }
+  const csv = rows.map(row => row.map(csvValue).join(',')).join('\n');
+  downloadText('forza-pipeline.csv', 'text/csv;charset=utf-8', csv);
+  showToast('✓ Deal pipeline exported');
+}
+
+function exportBackup() {
+  saveState();
+  downloadText('forza-dashboard-backup.json', 'application/json;charset=utf-8', JSON.stringify(state, null, 2));
+  showToast('✓ Backup downloaded');
+}
+
+function importBackup(file, inputEl) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = normalizeState(JSON.parse(reader.result));
+      Object.keys(state).forEach(key => delete state[key]);
+      Object.assign(state, imported);
+      saveState();
+      syncUIFromState();
+      showToast('✓ Backup imported');
+    } catch (e) {
+      showToast('Could not import that backup');
+    } finally {
+      if (inputEl) inputEl.value = '';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetData() {
+  if (!window.confirm('This will permanently delete all deals, buyers, notes, goals, and streak data. This cannot be undone.\n\nContinue?')) return;
+  if (!window.confirm('Last chance — delete everything and start fresh?')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  try { localStorage.removeItem('forza_dark'); } catch(e) {}
+  location.reload();
+}
+
+function syncUIFromState() {
+  initDate();
+  initChecks();
+  buildStreak();
+  renderBuyers();
+  renderPipeline();
+  updateMetrics();
+  initGoals();
+  const notes = document.getElementById('notes-area');
+  if (notes) notes.value = state.notes || '';
+  calcDeal();
+}
+
+// ─────────────────────────────────────────────────────────
+// GOALS
+// ─────────────────────────────────────────────────────────
+function incrementOffers(delta) {
+  state.offers = Math.max(0, state.offers + delta);
+  const pct = Math.min(100, Math.round(state.offers / 15 * 100));
+  document.getElementById('goal-offers-bar').style.width = pct + '%';
+  document.getElementById('goal-offers-pct').textContent = state.offers + ' / 15';
+  saveState();
+  if (delta > 0) showToast('Offer #' + state.offers + ' recorded — keep going!');
+}
+
+function initGoals() {
+  const pct = Math.min(100, Math.round(state.offers / 15 * 100));
+  document.getElementById('goal-offers-bar').style.width = pct + '%';
+  document.getElementById('goal-offers-pct').textContent = state.offers + ' / 15';
+}
+
+// ─────────────────────────────────────────────────────────
+// METRICS
+// ─────────────────────────────────────────────────────────
+function updateMetrics() {
+  document.getElementById('m-buyers').textContent = state.buyers.length;
+  const active = state.deals.new.length + state.deals.contacted.length;
+  const now = parseDateKey(todayKey()) || new Date();
+  now.setHours(0, 0, 0, 0);
+  let dueFollowUps = 0;
+  STAGE_ORDER.forEach(stage => {
+    state.deals[stage].forEach(deal => {
+      if (!deal.followUp) return;
+      const dueDate = parseDateKey(deal.followUp);
+      if (!dueDate) return;
+      dueDate.setHours(0, 0, 0, 0);
+      if (dueDate <= now) dueFollowUps += 1;
+    });
+  });
+  document.getElementById('m-leads').textContent = active;
+  const followupsEl = document.getElementById('m-followups');
+  if (followupsEl) followupsEl.textContent = dueFollowUps;
+  const followupMetric = document.getElementById('m-followup-metric');
+  if (followupMetric) followupMetric.style.setProperty('--metric-color', dueFollowUps > 0 ? 'var(--color-red)' : 'var(--color-accent)');
+  document.getElementById('m-contract').textContent = state.deals.contract.length;
+  document.getElementById('m-fees').textContent = state.fees > 0 ? '$' + state.fees.toLocaleString() : '$0';
+}
+
+// ─────────────────────────────────────────────────────────
+// NOTES — auto-save
+// ─────────────────────────────────────────────────────────
+function initNotes() {
+  const ta = document.getElementById('notes-area');
+  if (state.notes) ta.value = state.notes;
+  let saveTimer;
+  ta.addEventListener('input', () => {
+    state.notes = ta.value;
+    clearTimeout(saveTimer);
+    document.getElementById('notes-saved-indicator').textContent = 'Saving...';
+    saveTimer = setTimeout(() => {
+      saveState();
+      document.getElementById('notes-saved-indicator').textContent = 'Auto-saved ✓';
+    }, 800);
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// SEND PROMPT (ChatGPT integration)
+// ─────────────────────────────────────────────────────────
+function sendPrompt(text) {
+  showPromptSheet(text);
+  if (typeof window.sendPrompt === 'function') {
+    try {
+      window.sendPrompt(text);
+      showToast('Prompt sent to ChatGPT');
+      return;
+    } catch (e) {
+      // Fall through to clipboard/prompt fallback.
+    }
+  }
+
+  const hasClipboard = typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function';
+  if (hasClipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Copied to clipboard — paste in ChatGPT'))
+      .catch(() => {
+        window.prompt('Copy this prompt and paste it in ChatGPT:', text);
+        showToast('Prompt opened for manual copy');
+      });
+    return;
+  }
+
+  window.prompt('Copy this prompt and paste it in ChatGPT:', text);
+  showToast('Prompt opened for manual copy');
+}
+
+// ─────────────────────────────────────────────────────────
+// KEYBOARD SHORTCUTS
+// ─────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey) {
+    const shortcuts = { '1':'today','2':'pipeline','3':'analyzer','4':'buyers','5':'scripts','6':'notes','7':'goals' };
+    if (shortcuts[e.key]) {
+      e.preventDefault();
+      const pageId = shortcuts[e.key];
+      showPage(pageId);
+    }
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+// DARK MODE
+// ─────────────────────────────────────────────────────────
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark');
+  try {
+    window.localStorage.setItem('forza_dark', isDark ? '1' : '0');
+  } catch (e) {
+    showToast('Dark mode changed, but setting could not be saved');
+  }
+  document.getElementById('dark-toggle').textContent = isDark ? '☀️ Light mode' : '🌙 Dark mode';
+}
+
+function initDark() {
+  let darkPref = null;
+  try {
+    darkPref = window.localStorage.getItem('forza_dark');
+  } catch (e) {
+    darkPref = null;
+  }
+  if (darkPref === '1') {
+    document.body.classList.add('dark');
+    document.getElementById('dark-toggle').textContent = '☀️ Light mode';
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────
+initDark();
+initDate();
+initChecks();
+buildStreak();
+renderBuyers();
+renderPipeline();
+updateMetrics();
+initGoals();
+initNotes();
+calcDeal();
+</script>
+</body>
+</html>
