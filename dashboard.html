@@ -437,6 +437,22 @@ textarea:focus-visible {
 
 .add-deal-btn:hover { background: var(--color-background-primary); color: var(--color-text-secondary); border-style: solid; }
 
+/* ── Closing details ── */
+.closing-section {
+  border-top: 0.5px solid var(--color-border-tertiary);
+  padding-top: 12px;
+  margin-bottom: 12px;
+}
+.closing-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-accent-dark);
+  margin-bottom: 10px;
+}
+.closing-form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
 /* ── Deal form ── */
 .deal-form-card {
   background: var(--color-background-primary);
@@ -833,7 +849,7 @@ textarea:focus-visible {
   .two-col, .three-col, .analyzer-grid, .benchmark-grid, .milestone-grid { grid-template-columns: 1fr; }
   .pipeline-cols { grid-template-columns: repeat(2, 1fr); }
   .pipeline-controls { grid-template-columns: 1fr 1fr; }
-  .deal-form-grid-primary, .deal-form-grid-secondary { grid-template-columns: 1fr 1fr; }
+  .deal-form-grid-primary, .deal-form-grid-secondary, .closing-form-grid { grid-template-columns: 1fr 1fr; }
   .buyer-form { grid-template-columns: 1fr; }
 }
 
@@ -857,7 +873,7 @@ textarea:focus-visible {
   .main { overflow-y: visible; }
   .main-inner { padding: 14px; }
   .metrics-row, .pipeline-metrics { grid-template-columns: 1fr !important; }
-  .pipeline-cols, .pipeline-controls, .deal-form-grid-primary, .deal-form-grid-secondary { grid-template-columns: 1fr; }
+  .pipeline-cols, .pipeline-controls, .deal-form-grid-primary, .deal-form-grid-secondary, .closing-form-grid { grid-template-columns: 1fr; }
   .toolbar-row, .card-header { align-items: stretch; flex-direction: column; }
   .toolbar-actions { width: 100%; }
   .toolbar-actions .btn, .pipeline-controls .btn, .pipeline-controls .field-input { width: 100%; justify-content: center; }
@@ -1118,7 +1134,7 @@ textarea:focus-visible {
             </div>
             <div class="field-group" style="margin:0">
               <div class="field-label">Stage</div>
-              <select class="field-input" id="d-stage">
+              <select class="field-input" id="d-stage" onchange="updateClosingVisibility()">
                 <option value="new">New lead</option>
                 <option value="contacted">Contacted</option>
                 <option value="contract">Under contract</option>
@@ -1154,6 +1170,28 @@ textarea:focus-visible {
           <div style="margin-bottom:12px;">
             <div class="field-label">Next follow-up</div>
             <input class="field-input" id="d-follow" type="date">
+          </div>
+          <div id="closing-details-section" class="closing-section" style="display:none;">
+            <div class="closing-section-title">🏠 Closing details</div>
+            <div class="closing-form-grid">
+              <div class="field-group" style="margin:0">
+                <div class="field-label">Assigned buyer</div>
+                <input class="field-input" id="d-buyer" placeholder="Mike D." list="buyer-datalist" autocomplete="off">
+                <datalist id="buyer-datalist"></datalist>
+              </div>
+              <div class="field-group" style="margin:0">
+                <div class="field-label">Closing date</div>
+                <input class="field-input" id="d-close" type="date">
+              </div>
+              <div class="field-group" style="margin:0">
+                <div class="field-label">Attorney / title co.</div>
+                <input class="field-input" id="d-attorney" placeholder="Smith Law Group">
+              </div>
+              <div class="field-group" style="margin:0">
+                <div class="field-label">EMD paid ($)</div>
+                <input class="field-input" id="d-emd" placeholder="1000" type="number">
+              </div>
+            </div>
           </div>
           <div style="margin-bottom:12px;">
             <div class="field-label">Notes</div>
@@ -1891,6 +1929,17 @@ function resetDealForm() {
   if (submit) submit.textContent = 'Add to pipeline';
 }
 
+function updateClosingVisibility() {
+  const stage = document.getElementById('d-stage').value;
+  const section = document.getElementById('closing-details-section');
+  const show = stage === 'contract' || stage === 'closed';
+  section.style.display = show ? 'block' : 'none';
+  if (show) {
+    const dl = document.getElementById('buyer-datalist');
+    if (dl) dl.innerHTML = state.buyers.map(b => `<option value="${escapeHTML(b.name)}">`).join('');
+  }
+}
+
 function openAddDeal(stage) {
   resetDealForm();
   document.getElementById('d-stage').value = stage;
@@ -1898,6 +1947,7 @@ function openAddDeal(stage) {
   if (followInput && stage !== 'closed' && !followInput.value) {
     followInput.value = todayKey(new Date(Date.now() + 86400000));
   }
+  updateClosingVisibility();
   const f = document.getElementById('add-deal-form');
   f.style.display = 'block';
   setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
@@ -1918,7 +1968,12 @@ function openEditDeal(stage, idx) {
   document.getElementById('d-phone').value = d.phone || '';
   document.getElementById('d-source').value = d.source || 'Cold call';
   document.getElementById('d-follow').value = d.followUp || '';
+  document.getElementById('d-buyer').value = d.assignedBuyer || '';
+  document.getElementById('d-close').value = d.closingDate || '';
+  document.getElementById('d-attorney').value = d.attorney || '';
+  document.getElementById('d-emd').value = d.emd || '';
   document.getElementById('d-notes').value = d.notes || '';
+  updateClosingVisibility();
   document.getElementById('add-deal-form-title').textContent = '✏ Edit deal';
   document.getElementById('add-deal-submit').textContent = 'Save changes';
   const f = document.getElementById('add-deal-form');
@@ -1938,6 +1993,10 @@ function addDeal() {
   const phone = document.getElementById('d-phone').value.trim();
   const source = document.getElementById('d-source').value;
   const followUp = document.getElementById('d-follow').value;
+  const assignedBuyer = document.getElementById('d-buyer').value.trim();
+  const closingDate = document.getElementById('d-close').value;
+  const attorney = document.getElementById('d-attorney').value.trim();
+  const emd = parseFloat(document.getElementById('d-emd').value) || 0;
   const notes = document.getElementById('d-notes').value.trim();
   if (!addr) { showToast('Enter a property address'); return; }
   const maxOffer = arv ? Math.round(arv * 0.7 - rep - fee) : 0;
@@ -1945,7 +2004,7 @@ function addDeal() {
   if (editContext) {
     const { stage: oldStage, idx } = editContext;
     const oldDeal = state.deals[oldStage][idx];
-    const updated = { addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, notes, added: oldDeal.added };
+    const updated = { addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, assignedBuyer, closingDate, attorney, emd, notes, added: oldDeal.added };
     if (oldStage === stage) {
       state.deals[stage][idx] = updated;
     } else {
@@ -1957,13 +2016,13 @@ function addDeal() {
     resetDealForm();
     showToast('✓ Deal updated');
   } else {
-    state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, notes, added: todayKey() });
+    state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, assignedBuyer, closingDate, attorney, emd, notes, added: todayKey() });
     if (stage === 'closed') state.fees += fee;
     showToast('✓ Deal added to ' + STAGE_LABELS[stage]);
   }
 
-  ['d-addr','d-seller','d-phone','d-follow','d-notes'].forEach(id => document.getElementById(id).value = '');
-  ['d-arv','d-rep','d-ask'].forEach(id => document.getElementById(id).value = '');
+  ['d-addr','d-seller','d-phone','d-follow','d-buyer','d-close','d-attorney','d-notes'].forEach(id => document.getElementById(id).value = '');
+  ['d-arv','d-rep','d-ask','d-emd'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('d-fee').value = '10000';
   document.getElementById('add-deal-form').style.display = 'none';
   renderPipeline();
@@ -2015,6 +2074,18 @@ function followUpMeta(dateStr) {
   if (days === 0) return { className: 'due', text: 'Follow up today' };
   if (days === 1) return { className: 'scheduled', text: 'Follow up tomorrow' };
   return { className: 'scheduled', text: 'Follow up ' + label };
+}
+
+function closingDateMeta(dateStr) {
+  const d = parseDateKey(dateStr);
+  if (!d) return null;
+  const today = parseDateKey(todayKey());
+  const days = Math.ceil((d - today) / 86400000);
+  const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (days < 0) return { text: 'Closed ' + label, cls: 'clear' };
+  if (days === 0) return { text: 'Closing today!', cls: 'due' };
+  if (days <= 7) return { text: 'Closes ' + label + ' (' + days + 'd)', cls: 'scheduled' };
+  return { text: 'Closing ' + label, cls: 'clear' };
 }
 
 function dealMatchesQuery(deal, query) {
@@ -2069,6 +2140,19 @@ function renderPipeline() {
       const notes = d.notes ? `<div class="deal-meta" style="margin-top:5px;font-style:italic;color:var(--color-text-secondary);">${escapeHTML(d.notes)}</div>` : '';
       const arv = Number(d.arv) || 0;
       const repairs = Number(d.rep) || 0;
+      let closingHtml = '';
+      if (stage === 'contract' || stage === 'closed') {
+        const closeMeta = d.closingDate ? closingDateMeta(d.closingDate) : null;
+        const closeParts = [];
+        if (d.assignedBuyer) closeParts.push('Buyer: ' + escapeHTML(d.assignedBuyer));
+        if (d.attorney) closeParts.push('⚖ ' + escapeHTML(d.attorney));
+        if (closeMeta) closingHtml += `<div class="status-pill ${closeMeta.cls}" style="margin-top:6px;">${escapeHTML(closeMeta.text)}</div>`;
+        if (closeParts.length) closingHtml += `<div class="deal-meta" style="margin-top:4px;">${closeParts.join(' · ')}</div>`;
+        if (stage === 'closed' && d.emd > 0) {
+          const netFee = (Number(d.fee) || 10000) - d.emd;
+          closingHtml += `<div class="deal-meta" style="margin-top:3px;">EMD: ${formatMoney(d.emd)} · Net: <span style="font-weight:600;color:var(--color-accent);">${formatMoney(netFee)}</span></div>`;
+        }
+      }
       return `
       <div class="deal-card-pipeline">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;">
@@ -2080,6 +2164,7 @@ function renderPipeline() {
         ${gapHtml}
         ${d.maxOffer > 0 ? '<div class="deal-fee-pill">Max offer: ' + formatMoney(d.maxOffer) + '</div>' : ''}
         ${followHtml}
+        ${closingHtml}
         ${notes}
         <div class="deal-actions">
           ${prevStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${prevStage}')">← ${STAGE_LABELS[prevStage].split(' ')[0]}</button>` : ''}
@@ -2107,9 +2192,11 @@ function renderPipeline() {
 }
 
 function exportDeals() {
-  const rows = [['Stage','Address','Seller','Phone','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Notes','Added']];
+  const rows = [['Stage','Address','Seller','Phone','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Assigned Buyer','Closing Date','Attorney / Title Co.','EMD Paid','Net Fee','Notes','Added']];
   STAGE_ORDER.forEach(stage => {
     state.deals[stage].forEach(d => {
+      const emd = Number(d.emd) || 0;
+      const netFee = emd > 0 ? Math.max(0, (Number(d.fee) || 10000) - emd) : '';
       rows.push([
         STAGE_LABELS[stage],
         d.addr || '',
@@ -2122,6 +2209,11 @@ function exportDeals() {
         d.fee || '',
         d.maxOffer || '',
         d.followUp || '',
+        d.assignedBuyer || '',
+        d.closingDate || '',
+        d.attorney || '',
+        emd || '',
+        netFee,
         d.notes || '',
         d.added || ''
       ]);
