@@ -292,7 +292,7 @@ textarea:focus-visible {
 .benchmark-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .milestone-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .deal-form-grid-primary { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.deal-form-grid-secondary { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.deal-form-grid-secondary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 12px; }
 
 /* ── Checklist ── */
 .check-item {
@@ -1011,6 +1011,14 @@ textarea:focus-visible {
           </div>
         </div>
 
+        <div class="card" id="due-followups-card" style="display:none;border-left:3px solid var(--color-red);">
+          <div class="card-header">
+            <div class="card-title" style="color:var(--color-red);">Follow-ups due</div>
+            <button class="btn btn-sm" onclick="showPage('pipeline')">Open pipeline →</button>
+          </div>
+          <div id="due-followups-list"></div>
+        </div>
+
         <div class="card">
           <div class="card-header">
             <div class="card-title">Quick actions</div>
@@ -1094,7 +1102,7 @@ textarea:focus-visible {
         </div>
 
         <div id="add-deal-form" class="deal-form-card" style="display:none;">
-          <div class="card-title" style="margin-bottom:14px;color:var(--color-accent-dark);">➕ Add deal</div>
+          <div id="add-deal-form-title" class="card-title" style="margin-bottom:14px;color:var(--color-accent-dark);">➕ Add deal</div>
           <div class="deal-form-grid-primary">
             <div class="field-group" style="margin:0">
               <div class="field-label">Address</div>
@@ -1124,6 +1132,10 @@ textarea:focus-visible {
               <input class="field-input" id="d-seller" placeholder="John Smith">
             </div>
             <div class="field-group" style="margin:0">
+              <div class="field-label">Seller phone</div>
+              <input class="field-input" id="d-phone" placeholder="732-555-0123" type="tel">
+            </div>
+            <div class="field-group" style="margin:0">
               <div class="field-label">Seller asking ($)</div>
               <input class="field-input" id="d-ask" placeholder="320000" type="number">
             </div>
@@ -1148,8 +1160,8 @@ textarea:focus-visible {
             <input class="field-input" id="d-notes" placeholder="Seller motivated (divorce), wants to close by June...">
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-green" onclick="addDeal()">Add to pipeline</button>
-            <button class="btn" onclick="document.getElementById('add-deal-form').style.display='none'">Cancel</button>
+            <button class="btn btn-green" id="add-deal-submit" onclick="addDeal()">Add to pipeline</button>
+            <button class="btn" onclick="document.getElementById('add-deal-form').style.display='none';resetDealForm();">Cancel</button>
           </div>
         </div>
       </div>
@@ -1869,12 +1881,46 @@ function exportBuyers() {
 // ─────────────────────────────────────────────────────────
 // PIPELINE
 // ─────────────────────────────────────────────────────────
+let editContext = null;
+
+function resetDealForm() {
+  editContext = null;
+  const title = document.getElementById('add-deal-form-title');
+  const submit = document.getElementById('add-deal-submit');
+  if (title) title.textContent = '➕ Add deal';
+  if (submit) submit.textContent = 'Add to pipeline';
+}
+
 function openAddDeal(stage) {
+  resetDealForm();
   document.getElementById('d-stage').value = stage;
   const followInput = document.getElementById('d-follow');
   if (followInput && stage !== 'closed' && !followInput.value) {
     followInput.value = todayKey(new Date(Date.now() + 86400000));
   }
+  const f = document.getElementById('add-deal-form');
+  f.style.display = 'block';
+  setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
+  document.getElementById('d-addr').focus();
+}
+
+function openEditDeal(stage, idx) {
+  const d = state.deals[stage]?.[idx];
+  if (!d) return;
+  editContext = { stage, idx };
+  document.getElementById('d-addr').value = d.addr || '';
+  document.getElementById('d-arv').value = d.arv || '';
+  document.getElementById('d-rep').value = d.rep || '';
+  document.getElementById('d-ask').value = d.ask || '';
+  document.getElementById('d-fee').value = d.fee || 10000;
+  document.getElementById('d-stage').value = stage;
+  document.getElementById('d-seller').value = d.seller || '';
+  document.getElementById('d-phone').value = d.phone || '';
+  document.getElementById('d-source').value = d.source || 'Cold call';
+  document.getElementById('d-follow').value = d.followUp || '';
+  document.getElementById('d-notes').value = d.notes || '';
+  document.getElementById('add-deal-form-title').textContent = '✏ Edit deal';
+  document.getElementById('add-deal-submit').textContent = 'Save changes';
   const f = document.getElementById('add-deal-form');
   f.style.display = 'block';
   setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
@@ -1889,22 +1935,40 @@ function addDeal() {
   const fee = parseFloat(document.getElementById('d-fee').value) || 10000;
   const stage = document.getElementById('d-stage').value;
   const seller = document.getElementById('d-seller').value.trim();
+  const phone = document.getElementById('d-phone').value.trim();
   const source = document.getElementById('d-source').value;
   const followUp = document.getElementById('d-follow').value;
   const notes = document.getElementById('d-notes').value.trim();
   if (!addr) { showToast('Enter a property address'); return; }
   const maxOffer = arv ? Math.round(arv * 0.7 - rep - fee) : 0;
-  const addedDate = todayKey();
-  state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, source, followUp, notes, added: addedDate });
-  if (stage === 'closed') state.fees += fee;
-  ['d-addr','d-seller','d-follow','d-notes'].forEach(id => document.getElementById(id).value = '');
+
+  if (editContext) {
+    const { stage: oldStage, idx } = editContext;
+    const oldDeal = state.deals[oldStage][idx];
+    const updated = { addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, notes, added: oldDeal.added };
+    if (oldStage === stage) {
+      state.deals[stage][idx] = updated;
+    } else {
+      state.deals[oldStage].splice(idx, 1);
+      state.deals[stage].push(updated);
+      if (oldStage === 'closed') state.fees = Math.max(0, state.fees - (oldDeal.fee || 10000));
+      if (stage === 'closed') state.fees += fee;
+    }
+    resetDealForm();
+    showToast('✓ Deal updated');
+  } else {
+    state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, notes, added: todayKey() });
+    if (stage === 'closed') state.fees += fee;
+    showToast('✓ Deal added to ' + STAGE_LABELS[stage]);
+  }
+
+  ['d-addr','d-seller','d-phone','d-follow','d-notes'].forEach(id => document.getElementById(id).value = '');
   ['d-arv','d-rep','d-ask'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('d-fee').value = '10000';
   document.getElementById('add-deal-form').style.display = 'none';
   renderPipeline();
   updateMetrics();
   saveState();
-  showToast('✓ Deal added to ' + STAGE_LABELS[stage]);
 }
 
 function moveDeal(fromStage, idx, toStage) {
@@ -1955,7 +2019,7 @@ function followUpMeta(dateStr) {
 
 function dealMatchesQuery(deal, query) {
   if (!query) return true;
-  return [deal.addr, deal.seller, deal.source, deal.notes, deal.ask, deal.arv, deal.maxOffer]
+  return [deal.addr, deal.seller, deal.phone, deal.source, deal.notes, deal.ask, deal.arv, deal.maxOffer]
     .join(' ')
     .toLowerCase()
     .includes(query);
@@ -1999,6 +2063,7 @@ function renderPipeline() {
       const followHtml = follow ? `<div class="status-pill ${follow.className}">${escapeHTML(follow.text)}</div>` : '';
       const address = escapeHTML(d.addr || 'Untitled property');
       const seller = d.seller ? escapeHTML(d.seller) + ' · ' : '';
+      const phone = d.phone ? `<a href="tel:${escapeHTML(d.phone)}" style="color:var(--color-accent);text-decoration:none;" onclick="event.stopPropagation()">${escapeHTML(d.phone)}</a> · ` : '';
       const source = escapeHTML(d.source || 'No source');
       const added = escapeHTML(daysAgo(d.added));
       const notes = d.notes ? `<div class="deal-meta" style="margin-top:5px;font-style:italic;color:var(--color-text-secondary);">${escapeHTML(d.notes)}</div>` : '';
@@ -2010,7 +2075,7 @@ function renderPipeline() {
           <div class="deal-addr">${address}</div>
           <div style="font-size:10px;color:var(--color-text-tertiary);white-space:nowrap;margin-left:6px;">${added}</div>
         </div>
-        <div class="deal-meta">${seller}${source}</div>
+        <div class="deal-meta">${seller}${phone}${source}</div>
         ${arv ? '<div class="deal-meta" style="margin-top:2px;">ARV ' + formatMoney(arv) + (repairs ? ' · Repairs ' + formatMoney(repairs) : '') + '</div>' : ''}
         ${gapHtml}
         ${d.maxOffer > 0 ? '<div class="deal-fee-pill">Max offer: ' + formatMoney(d.maxOffer) + '</div>' : ''}
@@ -2019,7 +2084,8 @@ function renderPipeline() {
         <div class="deal-actions">
           ${prevStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${prevStage}')">← ${STAGE_LABELS[prevStage].split(' ')[0]}</button>` : ''}
           ${nextStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${nextStage}')">→ ${STAGE_LABELS[nextStage].split(' ')[0]}</button>` : ''}
-          <button class="deal-move-btn" onclick="removeDeal('${stage}',${i})" style="color:var(--color-red);margin-left:auto;">✕</button>
+          <button class="deal-move-btn" onclick="openEditDeal('${stage}',${i})" style="margin-left:auto;">✏ Edit</button>
+          <button class="deal-move-btn" onclick="removeDeal('${stage}',${i})" style="color:var(--color-red);">✕</button>
         </div>
       </div>`;
     }).join('');
@@ -2041,13 +2107,14 @@ function renderPipeline() {
 }
 
 function exportDeals() {
-  const rows = [['Stage','Address','Seller','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Notes','Added']];
+  const rows = [['Stage','Address','Seller','Phone','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Notes','Added']];
   STAGE_ORDER.forEach(stage => {
     state.deals[stage].forEach(d => {
       rows.push([
         STAGE_LABELS[stage],
         d.addr || '',
         d.seller || '',
+        d.phone || '',
         d.source || '',
         d.arv || '',
         d.rep || '',
@@ -2134,6 +2201,40 @@ function initGoals() {
 // ─────────────────────────────────────────────────────────
 // METRICS
 // ─────────────────────────────────────────────────────────
+function renderDueFollowups() {
+  const card = document.getElementById('due-followups-card');
+  const list = document.getElementById('due-followups-list');
+  if (!card || !list) return;
+  const now = parseDateKey(todayKey()) || new Date();
+  now.setHours(0, 0, 0, 0);
+  const due = [];
+  STAGE_ORDER.forEach(stage => {
+    state.deals[stage].forEach(deal => {
+      if (!deal.followUp) return;
+      const d = parseDateKey(deal.followUp);
+      if (!d) return;
+      d.setHours(0, 0, 0, 0);
+      if (d <= now) due.push({ deal, stage });
+    });
+  });
+  if (!due.length) { card.style.display = 'none'; return; }
+  due.sort((a, b) => (parseDateKey(a.deal.followUp)?.getTime() || 0) - (parseDateKey(b.deal.followUp)?.getTime() || 0));
+  card.style.display = 'block';
+  list.innerHTML = due.map(({ deal, stage }, i) => {
+    const meta = followUpMeta(deal.followUp);
+    const seller = deal.seller ? ' · ' + escapeHTML(deal.seller) : '';
+    const phoneHtml = deal.phone ? ` · <a href="tel:${escapeHTML(deal.phone)}" style="color:var(--color-accent);text-decoration:none;">${escapeHTML(deal.phone)}</a>` : '';
+    const border = i < due.length - 1 ? 'border-bottom:0.5px solid var(--color-border-tertiary);' : '';
+    return `<div style="padding:8px 0;${border}display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <div style="font-size:13px;font-weight:500;">${escapeHTML(deal.addr || 'Untitled property')}</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px;">${escapeHTML(STAGE_LABELS[stage])}${seller}${phoneHtml}</div>
+      </div>
+      <div class="status-pill due" style="flex-shrink:0;">${escapeHTML(meta?.text || '')}</div>
+    </div>`;
+  }).join('');
+}
+
 function updateMetrics() {
   document.getElementById('m-buyers').textContent = state.buyers.length;
   const active = state.deals.new.length + state.deals.contacted.length;
@@ -2154,6 +2255,7 @@ function updateMetrics() {
   if (followupsEl) followupsEl.textContent = dueFollowUps;
   const followupMetric = document.getElementById('m-followup-metric');
   if (followupMetric) followupMetric.style.setProperty('--metric-color', dueFollowUps > 0 ? 'var(--color-red)' : 'var(--color-accent)');
+  renderDueFollowups();
   document.getElementById('m-contract').textContent = state.deals.contract.length;
   document.getElementById('m-fees').textContent = state.fees > 0 ? '$' + state.fees.toLocaleString() : '$0';
 }
