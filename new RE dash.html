@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Forza Capital — Wholesaling Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231D9E75'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial,sans-serif' font-size='24' font-weight='700' fill='white'%3EFC%3C/text%3E%3C/svg%3E">
 <style>
 :root {
   --color-background-primary: #ffffff;
@@ -292,7 +291,7 @@ textarea:focus-visible {
 .benchmark-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .milestone-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .deal-form-grid-primary { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.deal-form-grid-secondary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 12px; }
+.deal-form-grid-secondary { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
 
 /* ── Checklist ── */
 .check-item {
@@ -436,22 +435,6 @@ textarea:focus-visible {
 }
 
 .add-deal-btn:hover { background: var(--color-background-primary); color: var(--color-text-secondary); border-style: solid; }
-
-/* ── Closing details ── */
-.closing-section {
-  border-top: 0.5px solid var(--color-border-tertiary);
-  padding-top: 12px;
-  margin-bottom: 12px;
-}
-.closing-section-title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--color-accent-dark);
-  margin-bottom: 10px;
-}
-.closing-form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
 /* ── Deal form ── */
 .deal-form-card {
@@ -814,47 +797,6 @@ textarea:focus-visible {
 .benchmark-label { color: var(--color-text-secondary); }
 .benchmark-value { font-weight: 500; color: var(--color-text-primary); }
 
-/* ── Lead sources ── */
-.source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 4px; }
-.source-card {
-  background: var(--color-background-primary);
-  border: 0.5px solid var(--color-border-tertiary);
-  border-radius: var(--border-radius-lg);
-  padding: 14px 16px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-}
-.source-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
-.source-name { font-size: 13px; font-weight: 600; color: var(--color-text-primary); line-height: 1.3; }
-.source-badges { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
-.source-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; white-space: nowrap; }
-.badge-free { background: var(--color-accent-bg); color: var(--color-accent-dark); }
-.badge-paid { background: var(--color-yellow-bg); color: var(--color-yellow); }
-.badge-fast { background: var(--color-blue-bg); color: var(--color-blue); }
-.source-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; flex: 1; }
-.source-body strong { color: var(--color-text-primary); font-weight: 600; }
-.source-action { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
-.source-section-label {
-  font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.07em; color: var(--color-text-tertiary); margin: 16px 0 10px;
-}
-.lead-priority-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-.priority-step {
-  display: flex; gap: 12px; align-items: flex-start;
-  padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
-}
-.priority-step:last-child { border-bottom: none; }
-.priority-num {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--color-accent); color: #fff;
-  font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-top: 1px;
-}
-.priority-text { font-size: 12px; color: var(--color-text-primary); line-height: 1.5; }
-.priority-text span { color: var(--color-text-secondary); font-size: 11px; display: block; margin-top: 1px; }
-
 /* ── Dark mode ── */
 .dark {
   --color-background-primary: #1a1a18;
@@ -887,10 +829,10 @@ textarea:focus-visible {
   .main-inner { padding: 16px; }
   .metrics-row { grid-template-columns: repeat(2, 1fr); }
   .pipeline-metrics { grid-template-columns: repeat(2, 1fr) !important; }
-  .two-col, .three-col, .analyzer-grid, .benchmark-grid, .milestone-grid, .source-grid, .lead-priority-row { grid-template-columns: 1fr; }
+  .two-col, .three-col, .analyzer-grid, .benchmark-grid, .milestone-grid { grid-template-columns: 1fr; }
   .pipeline-cols { grid-template-columns: repeat(2, 1fr); }
   .pipeline-controls { grid-template-columns: 1fr 1fr; }
-  .deal-form-grid-primary, .deal-form-grid-secondary, .closing-form-grid { grid-template-columns: 1fr 1fr; }
+  .deal-form-grid-primary, .deal-form-grid-secondary { grid-template-columns: 1fr 1fr; }
   .buyer-form { grid-template-columns: 1fr; }
 }
 
@@ -914,7 +856,7 @@ textarea:focus-visible {
   .main { overflow-y: visible; }
   .main-inner { padding: 14px; }
   .metrics-row, .pipeline-metrics { grid-template-columns: 1fr !important; }
-  .pipeline-cols, .pipeline-controls, .deal-form-grid-primary, .deal-form-grid-secondary, .closing-form-grid, .source-grid, .lead-priority-row { grid-template-columns: 1fr; }
+  .pipeline-cols, .pipeline-controls, .deal-form-grid-primary, .deal-form-grid-secondary { grid-template-columns: 1fr; }
   .toolbar-row, .card-header { align-items: stretch; flex-direction: column; }
   .toolbar-actions { width: 100%; }
   .toolbar-actions .btn, .pipeline-controls .btn, .pipeline-controls .field-input { width: 100%; justify-content: center; }
@@ -980,10 +922,6 @@ textarea:focus-visible {
       <span class="nav-icon">◉</span>
       <span>90-day goals</span>
     </button>
-    <button type="button" class="nav-item" onclick="showPage('leads', this)">
-      <span class="nav-icon">🎯</span>
-      <span>Lead sources</span>
-    </button>
 
     <div class="sidebar-footer">
       <div class="sidebar-footer-label">
@@ -1008,7 +946,7 @@ textarea:focus-visible {
           <div class="page-sub" id="today-date">Loading...</div>
         </div>
 
-        <div class="metrics-row pipeline-metrics">
+        <div class="metrics-row">
           <div class="metric" style="--metric-color: var(--color-blue)">
             <div class="metric-label">Cash buyers</div>
             <div class="metric-value" id="m-buyers">0</div>
@@ -1017,12 +955,7 @@ textarea:focus-visible {
           <div class="metric" style="--metric-color: var(--color-accent)">
             <div class="metric-label">Active leads</div>
             <div class="metric-value" id="m-leads">0</div>
-            <div class="metric-sub">new + contacted</div>
-          </div>
-          <div class="metric" id="m-followup-metric" style="--metric-color: var(--color-accent)">
-            <div class="metric-label">Follow-ups due</div>
-            <div class="metric-value" id="m-followups">0</div>
-            <div class="metric-sub">today or overdue</div>
+            <div class="metric-sub" id="m-followups-sub">0 follow-ups due</div>
           </div>
           <div class="metric" style="--metric-color: var(--color-yellow)">
             <div class="metric-label">Under contract</div>
@@ -1070,14 +1003,6 @@ textarea:focus-visible {
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="card" id="due-followups-card" style="display:none;border-left:3px solid var(--color-red);">
-          <div class="card-header">
-            <div class="card-title" style="color:var(--color-red);">Follow-ups due</div>
-            <button class="btn btn-sm" onclick="showPage('pipeline')">Open pipeline →</button>
-          </div>
-          <div id="due-followups-list"></div>
         </div>
 
         <div class="card">
@@ -1163,7 +1088,7 @@ textarea:focus-visible {
         </div>
 
         <div id="add-deal-form" class="deal-form-card" style="display:none;">
-          <div id="add-deal-form-title" class="card-title" style="margin-bottom:14px;color:var(--color-accent-dark);">➕ Add deal</div>
+          <div class="card-title" style="margin-bottom:14px;color:var(--color-accent-dark);">➕ Add deal</div>
           <div class="deal-form-grid-primary">
             <div class="field-group" style="margin:0">
               <div class="field-label">Address</div>
@@ -1179,7 +1104,7 @@ textarea:focus-visible {
             </div>
             <div class="field-group" style="margin:0">
               <div class="field-label">Stage</div>
-              <select class="field-input" id="d-stage" onchange="updateClosingVisibility()">
+              <select class="field-input" id="d-stage">
                 <option value="new">New lead</option>
                 <option value="contacted">Contacted</option>
                 <option value="contract">Under contract</option>
@@ -1191,10 +1116,6 @@ textarea:focus-visible {
             <div class="field-group" style="margin:0">
               <div class="field-label">Seller name</div>
               <input class="field-input" id="d-seller" placeholder="John Smith">
-            </div>
-            <div class="field-group" style="margin:0">
-              <div class="field-label">Seller phone</div>
-              <input class="field-input" id="d-phone" placeholder="732-555-0123" type="tel">
             </div>
             <div class="field-group" style="margin:0">
               <div class="field-label">Seller asking ($)</div>
@@ -1216,35 +1137,13 @@ textarea:focus-visible {
             <div class="field-label">Next follow-up</div>
             <input class="field-input" id="d-follow" type="date">
           </div>
-          <div id="closing-details-section" class="closing-section" style="display:none;">
-            <div class="closing-section-title">🏠 Closing details</div>
-            <div class="closing-form-grid">
-              <div class="field-group" style="margin:0">
-                <div class="field-label">Assigned buyer</div>
-                <input class="field-input" id="d-buyer" placeholder="Mike D." list="buyer-datalist" autocomplete="off">
-                <datalist id="buyer-datalist"></datalist>
-              </div>
-              <div class="field-group" style="margin:0">
-                <div class="field-label">Closing date</div>
-                <input class="field-input" id="d-close" type="date">
-              </div>
-              <div class="field-group" style="margin:0">
-                <div class="field-label">Attorney / title co.</div>
-                <input class="field-input" id="d-attorney" placeholder="Smith Law Group">
-              </div>
-              <div class="field-group" style="margin:0">
-                <div class="field-label">EMD paid ($)</div>
-                <input class="field-input" id="d-emd" placeholder="1000" type="number">
-              </div>
-            </div>
-          </div>
           <div style="margin-bottom:12px;">
             <div class="field-label">Notes</div>
             <input class="field-input" id="d-notes" placeholder="Seller motivated (divorce), wants to close by June...">
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-green" id="add-deal-submit" onclick="addDeal()">Add to pipeline</button>
-            <button class="btn" onclick="document.getElementById('add-deal-form').style.display='none';resetDealForm();">Cancel</button>
+            <button class="btn btn-green" onclick="addDeal()">Add to pipeline</button>
+            <button class="btn" onclick="document.getElementById('add-deal-form').style.display='none'">Cancel</button>
           </div>
         </div>
       </div>
@@ -1481,7 +1380,6 @@ textarea:focus-visible {
               <button class="btn btn-sm" onclick="exportBackup()">Backup JSON</button>
               <button class="btn btn-sm" onclick="document.getElementById('backup-import').click()">Import backup</button>
               <input class="file-input" id="backup-import" type="file" accept="application/json,.json" onchange="importBackup(this.files[0], this)">
-              <button class="btn btn-sm btn-danger" onclick="resetData()">Reset all data</button>
             </div>
           </div>
         </div>
@@ -1552,256 +1450,6 @@ textarea:focus-visible {
               <div class="milestone-row-title">🏠 Wk 9–12: First deal</div>
               <div class="milestone-row-body">Under contract → market to buyers → negotiate assignment → close and collect</div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- LEAD SOURCES -->
-      <div class="page" id="page-leads">
-        <div class="page-header">
-          <div class="page-title">Lead sources</div>
-          <div class="page-sub">Monmouth County — where to find motivated sellers</div>
-        </div>
-
-        <div class="lead-priority-row">
-          <div class="card">
-            <div class="card-title" style="margin-bottom:14px;">Start here — this week</div>
-            <div class="priority-step">
-              <div class="priority-num">1</div>
-              <div class="priority-text">Drive for dollars in Marlboro, Morganville, Aberdeen
-                <span>Look for neglected exteriors, overgrown yards, boarded windows. Log with DealMachine.</span>
-              </div>
-            </div>
-            <div class="priority-step">
-              <div class="priority-num">2</div>
-              <div class="priority-text">Pull FSBOs on Zillow &amp; Redfin right now — filter Monmouth County
-                <span>Owners listing themselves often can't sell retail. Call or text every one.</span>
-              </div>
-            </div>
-            <div class="priority-step">
-              <div class="priority-num">3</div>
-              <div class="priority-text">Post in 3 NJ Facebook investor groups today
-                <span>"Looking for off-market deals in Monmouth Co. — cash, fast close, any condition."</span>
-              </div>
-            </div>
-            <div class="priority-step">
-              <div class="priority-num">4</div>
-              <div class="priority-text">Start a PropStream trial — pull absentee owner list in 07746, 07751, 07747
-                <span>Filter: absentee owner + high equity + 3+ bed SFR. That's your call list.</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title" style="margin-bottom:14px;">Monmouth County resources</div>
-            <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8;">
-              <div style="padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);">
-                <strong style="color:var(--color-text-primary);display:block;">NJ Sheriff Sales (pre-foreclosure)</strong>
-                monmouthsheriff.org — lists properties scheduled for foreclosure auction
-              </div>
-              <div style="padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);">
-                <strong style="color:var(--color-text-primary);display:block;">Probate — Surrogate's Court</strong>
-                Monmouth County Courthouse, Freehold NJ · 732-431-7330 · Filings are public record
-              </div>
-              <div style="padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);">
-                <strong style="color:var(--color-text-primary);display:block;">NJ REIA (Real Estate Investors Association)</strong>
-                Monthly meetings — buyers, wholesalers, attorneys all in one room
-              </div>
-              <div style="padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);">
-                <strong style="color:var(--color-text-primary);display:block;">Hot zip codes</strong>
-                Marlboro 07746 · Morganville 07751 · Aberdeen 07747 · Keyport 07735 · Hazlet 07730
-              </div>
-              <div style="padding:6px 0;">
-                <strong style="color:var(--color-text-primary);display:block;">Skip trace cost benchmark</strong>
-                BatchSkipTracing ~$0.15–0.20/record · PropStream built-in · DealMachine built-in
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="source-section-label">Free &amp; low cost</div>
-        <div class="source-grid">
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">Driving for dollars</div>
-              <div class="source-badges"><span class="source-badge badge-free">Free</span><span class="source-badge badge-fast">Fast</span></div>
-            </div>
-            <div class="source-body">
-              Drive neighborhoods and log properties with <strong>DealMachine</strong> (free tier available). Look for: peeling paint, overgrown lawn, boarded windows, tarps on roof, mail piling up, no curtains.<br><br>
-              <strong>Best areas:</strong> older neighborhoods in Aberdeen, Keyport, Hazlet, Keansburg. Marlboro/Morganville for higher ARV plays.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Give me a driving for dollars route plan for Monmouth County NJ — which neighborhoods should I drive first and what should I look for?')">↗ Route plan</button>
-              <button class="qa-btn" onclick="sendPrompt('Write a text I can send to an absentee owner whose property I found while driving for dollars in Monmouth County NJ')">↗ Outreach text</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">FSBOs — Zillow &amp; Redfin</div>
-              <div class="source-badges"><span class="source-badge badge-free">Free</span><span class="source-badge badge-fast">Fast</span></div>
-            </div>
-            <div class="source-body">
-              Filter "For Sale by Owner" in Monmouth County on Zillow and Redfin. These owners are already trying to skip agents — they're more open to cash offers.<br><br>
-              <strong>Call every listing.</strong> Most won't work but you only need one. Check Craigslist real estate section too.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write a cold call script for reaching out to a FSBO seller in Monmouth County NJ who listed on Zillow — I am a cash buyer wholesaler')">↗ FSBO script</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">Probate leads</div>
-              <div class="source-badges"><span class="source-badge badge-free">Free</span></div>
-            </div>
-            <div class="source-body">
-              Heirs inheriting a property they don't want = highly motivated. File filings at <strong>Monmouth County Surrogate's Court</strong> (Freehold) are public record.<br><br>
-              Visit or call 732-431-7330 to request recent estate filings. Skip trace the executor, send a letter or call with empathy.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write a compassionate letter I can send to an heir who inherited a property in Monmouth County NJ and may want to sell fast for cash')">↗ Probate letter</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">Facebook groups</div>
-              <div class="source-badges"><span class="source-badge badge-free">Free</span></div>
-            </div>
-            <div class="source-body">
-              Search and join: <strong>"We Buy Houses NJ"</strong>, <strong>"NJ Real Estate Investors"</strong>, <strong>"Monmouth County Real Estate"</strong>, local community groups for Marlboro/Morganville/Aberdeen.<br><br>
-              Post consistently: looking for off-market deals, any condition, fast close.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write a Facebook group post I can use to find motivated sellers in Monmouth County NJ. I buy houses for cash, any condition, fast close. Keep it casual and authentic.')">↗ FB post</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">NJ Sheriff sales</div>
-              <div class="source-badges"><span class="source-badge badge-free">Free</span></div>
-            </div>
-            <div class="source-body">
-              <strong>monmouthsheriff.org</strong> lists properties scheduled for foreclosure auction. Contact owners before the auction date — they often want out fast and a cash offer lets them walk away with something.<br><br>
-              These are highly motivated sellers with a hard deadline.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write a script for calling a homeowner in Monmouth County NJ whose home is listed on the NJ Sheriff sale auction list — they are pre-foreclosure and I want to offer a cash buyout')">↗ Pre-foreclosure script</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">Expired MLS listings</div>
-              <div class="source-badges"><span class="source-badge badge-free">Free</span></div>
-            </div>
-            <div class="source-body">
-              Listings that expired without selling = sellers who couldn't move the property at retail. They may now be open to a cash offer below market.<br><br>
-              Find via Redfin (filter "Off market") or ask a friendly realtor for expired comps in Monmouth Co.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write a cold call script for reaching out to a homeowner whose listing just expired on the MLS in Monmouth County NJ — they could not sell at retail and I want to offer cash')">↗ Expired script</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="source-section-label">Paid &amp; volume</div>
-        <div class="source-grid">
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">PropStream</div>
-              <div class="source-badges"><span class="source-badge badge-paid">~$99/mo</span><span class="source-badge badge-fast">High volume</span></div>
-            </div>
-            <div class="source-body">
-              Best all-in-one list tool. Filter by: <strong>pre-foreclosure, tax delinquent, absentee owner, high equity, vacant</strong> — all within specific zip codes.<br><br>
-              <strong>Start with:</strong> Absentee owner + high equity + SFR in 07746, 07751, 07747. Export 200 records, skip trace, start calling.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Walk me through the exact PropStream filters I should use to pull motivated seller leads in Monmouth County NJ zip codes 07746, 07751, 07747')">↗ PropStream filters</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">Cold calling + dialer</div>
-              <div class="source-badges"><span class="source-badge badge-paid">Mojo ~$99/mo</span></div>
-            </div>
-            <div class="source-body">
-              Pull a list from PropStream, skip trace with <strong>BatchSkipTracing</strong> (~$0.18/record), load into <strong>Mojo Dialer</strong> for triple-line dialing. Realistic volume: 100–200 dials/day.<br><br>
-              Expect 1–3 warm leads per 100 dials. 200 dials = 2–6 leads/day.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('What is the best workflow for cold calling motivated sellers in Monmouth County NJ? Walk me through list pulling, skip tracing, and dialer setup step by step')">↗ Calling workflow</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">SMS texting</div>
-              <div class="source-badges"><span class="source-badge badge-paid">Launch Control ~$150/mo</span></div>
-            </div>
-            <div class="source-body">
-              Same list as cold calling — same PropStream export + skip trace. SMS gets higher response rates than calls for many demographics.<br><br>
-              <strong>Tools:</strong> Launch Control, REI Reply, or BatchLeads texting. Keep first message short, casual, non-pushy.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write 3 different opening SMS texts I can send to motivated seller leads in Monmouth County NJ — keep each under 160 characters, casual, not spammy')">↗ SMS templates</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">Direct mail</div>
-              <div class="source-badges"><span class="source-badge badge-paid">$0.50–1.00/piece</span></div>
-            </div>
-            <div class="source-body">
-              Handwritten-style postcards or yellow letters still work. Best ROI on high-equity absentee owner and pre-foreclosure lists.<br><br>
-              <strong>Tools:</strong> Click2Mail, PostcardMania, REI Print Mail. Plan for 500+ pieces/month before expecting consistent callbacks.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Write a direct mail postcard message for motivated sellers in Monmouth County NJ — homeowners who are behind on payments or need to sell fast. Keep it short, 3-4 sentences, personal tone.')">↗ Postcard copy</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">DealMachine Pro</div>
-              <div class="source-badges"><span class="source-badge badge-paid">~$49–99/mo</span></div>
-            </div>
-            <div class="source-body">
-              Combines driving for dollars, skip tracing, and direct mail in one app. Log a property, pull owner info, and send a postcard — all from your phone.<br><br>
-              Best for combining D4D with immediate outreach. Can also bulk-import lists and mail campaigns.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('What is the best DealMachine workflow for a new wholesaler in Monmouth County NJ who wants to find and contact motivated sellers efficiently?')">↗ DealMachine setup</button>
-            </div>
-          </div>
-
-          <div class="source-card">
-            <div class="source-card-header">
-              <div class="source-name">BatchLeads / BatchSkipTracing</div>
-              <div class="source-badges"><span class="source-badge badge-paid">$0.15–0.20/record</span></div>
-            </div>
-            <div class="source-body">
-              Best standalone skip trace service. Upload a list of addresses, get back phone numbers and emails. Pairs with any dialer or texting platform.<br><br>
-              Also has its own list-pulling and texting features. Good if you don't want PropStream — slightly cheaper, less data depth.
-            </div>
-            <div class="source-action">
-              <button class="qa-btn" onclick="sendPrompt('Compare PropStream vs BatchLeads for a new wholesaler in Monmouth County NJ who has a $150/month budget for lead generation tools. Which should I start with?')">↗ Compare tools</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:14px;">
-          <div class="card-title" style="margin-bottom:10px;">More ChatGPT prompts</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="qa-btn" onclick="sendPrompt('What are the top 5 motivated seller lead sources for a new wholesaler in Monmouth County NJ with a $200/month budget?')">Budget plan</button>
-            <button class="qa-btn" onclick="sendPrompt('Write a 3-step follow-up sequence for a motivated seller in NJ who expressed interest but went quiet — day 3, day 7, day 14')">Follow-up sequence</button>
-            <button class="qa-btn" onclick="sendPrompt('How do I find and pull a pre-foreclosure list in Monmouth County NJ zip codes 07746 07751 07747 using PropStream?')">Pre-foreclosure list</button>
-            <button class="qa-btn" onclick="sendPrompt('What should my daily lead generation routine look like as a new wholesaler in Monmouth County NJ? Give me a 2-hour daily plan.')">Daily routine</button>
-            <button class="qa-btn" onclick="sendPrompt('How many leads, offers, and follow-ups do I realistically need to close my first wholesale deal in NJ? Give me the funnel math.')">Funnel math</button>
           </div>
         </div>
       </div>
@@ -2214,63 +1862,12 @@ function exportBuyers() {
 // ─────────────────────────────────────────────────────────
 // PIPELINE
 // ─────────────────────────────────────────────────────────
-let editContext = null;
-
-function resetDealForm() {
-  editContext = null;
-  const title = document.getElementById('add-deal-form-title');
-  const submit = document.getElementById('add-deal-submit');
-  if (title) title.textContent = '➕ Add deal';
-  if (submit) submit.textContent = 'Add to pipeline';
-}
-
-function updateClosingVisibility() {
-  const stage = document.getElementById('d-stage').value;
-  const section = document.getElementById('closing-details-section');
-  const show = stage === 'contract' || stage === 'closed';
-  section.style.display = show ? 'block' : 'none';
-  if (show) {
-    const dl = document.getElementById('buyer-datalist');
-    if (dl) dl.innerHTML = state.buyers.map(b => `<option value="${escapeHTML(b.name)}">`).join('');
-  }
-}
-
 function openAddDeal(stage) {
-  resetDealForm();
   document.getElementById('d-stage').value = stage;
   const followInput = document.getElementById('d-follow');
   if (followInput && stage !== 'closed' && !followInput.value) {
     followInput.value = todayKey(new Date(Date.now() + 86400000));
   }
-  updateClosingVisibility();
-  const f = document.getElementById('add-deal-form');
-  f.style.display = 'block';
-  setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
-  document.getElementById('d-addr').focus();
-}
-
-function openEditDeal(stage, idx) {
-  const d = state.deals[stage]?.[idx];
-  if (!d) return;
-  editContext = { stage, idx };
-  document.getElementById('d-addr').value = d.addr || '';
-  document.getElementById('d-arv').value = d.arv || '';
-  document.getElementById('d-rep').value = d.rep || '';
-  document.getElementById('d-ask').value = d.ask || '';
-  document.getElementById('d-fee').value = d.fee || 10000;
-  document.getElementById('d-stage').value = stage;
-  document.getElementById('d-seller').value = d.seller || '';
-  document.getElementById('d-phone').value = d.phone || '';
-  document.getElementById('d-source').value = d.source || 'Cold call';
-  document.getElementById('d-follow').value = d.followUp || '';
-  document.getElementById('d-buyer').value = d.assignedBuyer || '';
-  document.getElementById('d-close').value = d.closingDate || '';
-  document.getElementById('d-attorney').value = d.attorney || '';
-  document.getElementById('d-emd').value = d.emd || '';
-  document.getElementById('d-notes').value = d.notes || '';
-  updateClosingVisibility();
-  document.getElementById('add-deal-form-title').textContent = '✏ Edit deal';
-  document.getElementById('add-deal-submit').textContent = 'Save changes';
   const f = document.getElementById('add-deal-form');
   f.style.display = 'block';
   setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
@@ -2285,44 +1882,22 @@ function addDeal() {
   const fee = parseFloat(document.getElementById('d-fee').value) || 10000;
   const stage = document.getElementById('d-stage').value;
   const seller = document.getElementById('d-seller').value.trim();
-  const phone = document.getElementById('d-phone').value.trim();
   const source = document.getElementById('d-source').value;
   const followUp = document.getElementById('d-follow').value;
-  const assignedBuyer = document.getElementById('d-buyer').value.trim();
-  const closingDate = document.getElementById('d-close').value;
-  const attorney = document.getElementById('d-attorney').value.trim();
-  const emd = parseFloat(document.getElementById('d-emd').value) || 0;
   const notes = document.getElementById('d-notes').value.trim();
   if (!addr) { showToast('Enter a property address'); return; }
   const maxOffer = arv ? Math.round(arv * 0.7 - rep - fee) : 0;
-
-  if (editContext) {
-    const { stage: oldStage, idx } = editContext;
-    const oldDeal = state.deals[oldStage][idx];
-    const updated = { addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, assignedBuyer, closingDate, attorney, emd, notes, added: oldDeal.added };
-    if (oldStage === stage) {
-      state.deals[stage][idx] = updated;
-    } else {
-      state.deals[oldStage].splice(idx, 1);
-      state.deals[stage].push(updated);
-      if (oldStage === 'closed') state.fees = Math.max(0, state.fees - (oldDeal.fee || 10000));
-      if (stage === 'closed') state.fees += fee;
-    }
-    resetDealForm();
-    showToast('✓ Deal updated');
-  } else {
-    state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, phone, source, followUp, assignedBuyer, closingDate, attorney, emd, notes, added: todayKey() });
-    if (stage === 'closed') state.fees += fee;
-    showToast('✓ Deal added to ' + STAGE_LABELS[stage]);
-  }
-
-  ['d-addr','d-seller','d-phone','d-follow','d-buyer','d-close','d-attorney','d-notes'].forEach(id => document.getElementById(id).value = '');
-  ['d-arv','d-rep','d-ask','d-emd'].forEach(id => document.getElementById(id).value = '');
+  const addedDate = todayKey();
+  state.deals[stage].push({ addr, arv, rep, ask, fee, maxOffer, seller, source, followUp, notes, added: addedDate });
+  if (stage === 'closed') state.fees += fee;
+  ['d-addr','d-seller','d-follow','d-notes'].forEach(id => document.getElementById(id).value = '');
+  ['d-arv','d-rep','d-ask'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('d-fee').value = '10000';
   document.getElementById('add-deal-form').style.display = 'none';
   renderPipeline();
   updateMetrics();
   saveState();
+  showToast('✓ Deal added to ' + STAGE_LABELS[stage]);
 }
 
 function moveDeal(fromStage, idx, toStage) {
@@ -2371,21 +1946,9 @@ function followUpMeta(dateStr) {
   return { className: 'scheduled', text: 'Follow up ' + label };
 }
 
-function closingDateMeta(dateStr) {
-  const d = parseDateKey(dateStr);
-  if (!d) return null;
-  const today = parseDateKey(todayKey());
-  const days = Math.ceil((d - today) / 86400000);
-  const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  if (days < 0) return { text: 'Closed ' + label, cls: 'clear' };
-  if (days === 0) return { text: 'Closing today!', cls: 'due' };
-  if (days <= 7) return { text: 'Closes ' + label + ' (' + days + 'd)', cls: 'scheduled' };
-  return { text: 'Closing ' + label, cls: 'clear' };
-}
-
 function dealMatchesQuery(deal, query) {
   if (!query) return true;
-  return [deal.addr, deal.seller, deal.phone, deal.source, deal.notes, deal.ask, deal.arv, deal.maxOffer]
+  return [deal.addr, deal.seller, deal.source, deal.notes, deal.ask, deal.arv, deal.maxOffer]
     .join(' ')
     .toLowerCase()
     .includes(query);
@@ -2429,43 +1992,27 @@ function renderPipeline() {
       const followHtml = follow ? `<div class="status-pill ${follow.className}">${escapeHTML(follow.text)}</div>` : '';
       const address = escapeHTML(d.addr || 'Untitled property');
       const seller = d.seller ? escapeHTML(d.seller) + ' · ' : '';
-      const phone = d.phone ? `<a href="tel:${escapeHTML(d.phone)}" style="color:var(--color-accent);text-decoration:none;" onclick="event.stopPropagation()">${escapeHTML(d.phone)}</a> · ` : '';
       const source = escapeHTML(d.source || 'No source');
       const added = escapeHTML(daysAgo(d.added));
       const notes = d.notes ? `<div class="deal-meta" style="margin-top:5px;font-style:italic;color:var(--color-text-secondary);">${escapeHTML(d.notes)}</div>` : '';
       const arv = Number(d.arv) || 0;
       const repairs = Number(d.rep) || 0;
-      let closingHtml = '';
-      if (stage === 'contract' || stage === 'closed') {
-        const closeMeta = d.closingDate ? closingDateMeta(d.closingDate) : null;
-        const closeParts = [];
-        if (d.assignedBuyer) closeParts.push('Buyer: ' + escapeHTML(d.assignedBuyer));
-        if (d.attorney) closeParts.push('⚖ ' + escapeHTML(d.attorney));
-        if (closeMeta) closingHtml += `<div class="status-pill ${closeMeta.cls}" style="margin-top:6px;">${escapeHTML(closeMeta.text)}</div>`;
-        if (closeParts.length) closingHtml += `<div class="deal-meta" style="margin-top:4px;">${closeParts.join(' · ')}</div>`;
-        if (stage === 'closed' && d.emd > 0) {
-          const netFee = (Number(d.fee) || 10000) - d.emd;
-          closingHtml += `<div class="deal-meta" style="margin-top:3px;">EMD: ${formatMoney(d.emd)} · Net: <span style="font-weight:600;color:var(--color-accent);">${formatMoney(netFee)}</span></div>`;
-        }
-      }
       return `
       <div class="deal-card-pipeline">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;">
           <div class="deal-addr">${address}</div>
           <div style="font-size:10px;color:var(--color-text-tertiary);white-space:nowrap;margin-left:6px;">${added}</div>
         </div>
-        <div class="deal-meta">${seller}${phone}${source}</div>
+        <div class="deal-meta">${seller}${source}</div>
         ${arv ? '<div class="deal-meta" style="margin-top:2px;">ARV ' + formatMoney(arv) + (repairs ? ' · Repairs ' + formatMoney(repairs) : '') + '</div>' : ''}
         ${gapHtml}
         ${d.maxOffer > 0 ? '<div class="deal-fee-pill">Max offer: ' + formatMoney(d.maxOffer) + '</div>' : ''}
         ${followHtml}
-        ${closingHtml}
         ${notes}
         <div class="deal-actions">
           ${prevStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${prevStage}')">← ${STAGE_LABELS[prevStage].split(' ')[0]}</button>` : ''}
           ${nextStage ? `<button class="deal-move-btn" onclick="moveDeal('${stage}',${i},'${nextStage}')">→ ${STAGE_LABELS[nextStage].split(' ')[0]}</button>` : ''}
-          <button class="deal-move-btn" onclick="openEditDeal('${stage}',${i})" style="margin-left:auto;">✏ Edit</button>
-          <button class="deal-move-btn" onclick="removeDeal('${stage}',${i})" style="color:var(--color-red);">✕</button>
+          <button class="deal-move-btn" onclick="removeDeal('${stage}',${i})" style="color:var(--color-red);margin-left:auto;">✕</button>
         </div>
       </div>`;
     }).join('');
@@ -2487,16 +2034,13 @@ function renderPipeline() {
 }
 
 function exportDeals() {
-  const rows = [['Stage','Address','Seller','Phone','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Assigned Buyer','Closing Date','Attorney / Title Co.','EMD Paid','Net Fee','Notes','Added']];
+  const rows = [['Stage','Address','Seller','Source','ARV','Repairs','Seller Asking','Assignment Fee','Max Offer','Next Follow-up','Notes','Added']];
   STAGE_ORDER.forEach(stage => {
     state.deals[stage].forEach(d => {
-      const emd = Number(d.emd) || 0;
-      const netFee = emd > 0 ? Math.max(0, (Number(d.fee) || 10000) - emd) : '';
       rows.push([
         STAGE_LABELS[stage],
         d.addr || '',
         d.seller || '',
-        d.phone || '',
         d.source || '',
         d.arv || '',
         d.rep || '',
@@ -2504,11 +2048,6 @@ function exportDeals() {
         d.fee || '',
         d.maxOffer || '',
         d.followUp || '',
-        d.assignedBuyer || '',
-        d.closingDate || '',
-        d.attorney || '',
-        emd || '',
-        netFee,
         d.notes || '',
         d.added || ''
       ]);
@@ -2546,14 +2085,6 @@ function importBackup(file, inputEl) {
   reader.readAsText(file);
 }
 
-function resetData() {
-  if (!window.confirm('This will permanently delete all deals, buyers, notes, goals, and streak data. This cannot be undone.\n\nContinue?')) return;
-  if (!window.confirm('Last chance — delete everything and start fresh?')) return;
-  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
-  try { localStorage.removeItem('forza_dark'); } catch(e) {}
-  location.reload();
-}
-
 function syncUIFromState() {
   initDate();
   initChecks();
@@ -2588,40 +2119,6 @@ function initGoals() {
 // ─────────────────────────────────────────────────────────
 // METRICS
 // ─────────────────────────────────────────────────────────
-function renderDueFollowups() {
-  const card = document.getElementById('due-followups-card');
-  const list = document.getElementById('due-followups-list');
-  if (!card || !list) return;
-  const now = parseDateKey(todayKey()) || new Date();
-  now.setHours(0, 0, 0, 0);
-  const due = [];
-  STAGE_ORDER.forEach(stage => {
-    state.deals[stage].forEach(deal => {
-      if (!deal.followUp) return;
-      const d = parseDateKey(deal.followUp);
-      if (!d) return;
-      d.setHours(0, 0, 0, 0);
-      if (d <= now) due.push({ deal, stage });
-    });
-  });
-  if (!due.length) { card.style.display = 'none'; return; }
-  due.sort((a, b) => (parseDateKey(a.deal.followUp)?.getTime() || 0) - (parseDateKey(b.deal.followUp)?.getTime() || 0));
-  card.style.display = 'block';
-  list.innerHTML = due.map(({ deal, stage }, i) => {
-    const meta = followUpMeta(deal.followUp);
-    const seller = deal.seller ? ' · ' + escapeHTML(deal.seller) : '';
-    const phoneHtml = deal.phone ? ` · <a href="tel:${escapeHTML(deal.phone)}" style="color:var(--color-accent);text-decoration:none;">${escapeHTML(deal.phone)}</a>` : '';
-    const border = i < due.length - 1 ? 'border-bottom:0.5px solid var(--color-border-tertiary);' : '';
-    return `<div style="padding:8px 0;${border}display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <div>
-        <div style="font-size:13px;font-weight:500;">${escapeHTML(deal.addr || 'Untitled property')}</div>
-        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px;">${escapeHTML(STAGE_LABELS[stage])}${seller}${phoneHtml}</div>
-      </div>
-      <div class="status-pill due" style="flex-shrink:0;">${escapeHTML(meta?.text || '')}</div>
-    </div>`;
-  }).join('');
-}
-
 function updateMetrics() {
   document.getElementById('m-buyers').textContent = state.buyers.length;
   const active = state.deals.new.length + state.deals.contacted.length;
@@ -2638,11 +2135,8 @@ function updateMetrics() {
     });
   });
   document.getElementById('m-leads').textContent = active;
-  const followupsEl = document.getElementById('m-followups');
-  if (followupsEl) followupsEl.textContent = dueFollowUps;
-  const followupMetric = document.getElementById('m-followup-metric');
-  if (followupMetric) followupMetric.style.setProperty('--metric-color', dueFollowUps > 0 ? 'var(--color-red)' : 'var(--color-accent)');
-  renderDueFollowups();
+  const dueSub = document.getElementById('m-followups-sub');
+  if (dueSub) dueSub.textContent = dueFollowUps + (dueFollowUps === 1 ? ' follow-up due' : ' follow-ups due');
   document.getElementById('m-contract').textContent = state.deals.contract.length;
   document.getElementById('m-fees').textContent = state.fees > 0 ? '$' + state.fees.toLocaleString() : '$0';
 }
